@@ -1,0 +1,72 @@
+* {
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+}
+#homepage {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1 1 auto;
+}
+#root {
+  height: 100%;
+}
+
+.container {
+  background-color: #171717;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  display: flex;
+}
+
+
+#signUpBox {
+  display: flex;
+  flex-direction: column;
+  width: 20%;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid grey;
+  border-radius: 4px;
+  height: 55%;
+  background-color: #262626;
+}
+
+#signUpBoxText {
+  color: white;
+  margin-bottom: 1em;
+  margin-top: 1em;
+  text-align: center;
+}
+
+#accountDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  margin-top: 2em;
+  width: fit-content;
+}
+.carousel {
+  position: relative;
+  top: 0;
+  left: 0;
+}
+#carouselImage {
+  position: absolute;
+  left: 5em;
+  border-radius: 45px;
+}
+#emptyScreen {
+  position: relative;
+  z-index: 100;
+}
