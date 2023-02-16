@@ -1,5 +1,6 @@
-import { createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, signOut, updateProfile } from 'firebase/auth'
+import { onAuthStateChanged, signInWithEmailAndPassword, signOut} from 'firebase/auth'
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { auth } from '../firebase-config.js'
 const Login = () => {
     const [loginEmail, setLoginEmail] = useState("")
@@ -8,20 +9,19 @@ const Login = () => {
     useEffect(() => {
         onAuthStateChanged(auth, (currentUser) => {
             setUser(currentUser);
-
         })
-        console.log(auth);
     })
     const login = async (e) => {
         try {
             const user = await signInWithEmailAndPassword(auth, loginEmail, loginPassword);
+            console.log(await user)
 
         } catch (error) {
-            console.log(error)
+            console.log(error.code)
         }
 
     }
-    
+
     const logout = async (e) => {
         await signOut(auth)
     }
@@ -32,7 +32,9 @@ const Login = () => {
                 <h3>Login</h3>
                 <input placeholder='Email' onChange={(event) => { setLoginEmail(event.target.value) }} />
                 <input placeholder='Password' onChange={(event) => { setLoginPassword(event.target.value) }} />
-                <button onClick={login}>Login</button>
+                <Link to={"/main"} state={{ user: loginEmail, email: loginPassword}} >
+                    <button onClick={login}>Login</button>
+                </Link>
             </div>
             <div id='loginInfo'>
                 <h4>User Logged In: {user?.email}</h4>

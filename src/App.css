@@ -21,11 +21,30 @@ body {
   flex-direction: column;
 }
 
-
-header {
-  display: flex;
+#sidebar {
+  border: 2px solid blue;
+  width: 17.5%;
+  height: 100%;
+  background-color: #404040;
+  border: 1px solid grey;
 }
 
+header {
+  border: 2px solid red;
+  background-color: #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+}
+
+#iconsContainer {
+  border: 2px solid red;
+  width: 15%;
+  gap: 32px;
+  display: flex;
+
+}
+
+.headerEle  
 #signUpContainer {
   display: flex;
   flex-direction: column;
@@ -58,6 +77,10 @@ header {
   flex-direction: column;
   justify-items: center;
   align-items: center;
+}
+
+.list-group {
+  background-color: #262626;
 }
 .input-group {
   justify-content: center;
