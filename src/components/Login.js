@@ -17,6 +17,7 @@ const Login = () => {
             console.log(await user)
 
         } catch (error) {
+            e.preventDefault();
             console.log(error.code)
         }
 

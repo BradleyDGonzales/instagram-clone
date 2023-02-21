@@ -8,48 +8,129 @@ body {
   height: 100%;
   width: 100%;
 }
+
 #signUpPage {
   display: flex;
   justify-content: center;
   align-items: center;
-  flex: 1 1 auto;
+  height: 100%;
 }
+
 #root {
   height: 100%;
   background-color: #171717;
-  display: flex;
-  flex-direction: column;
 }
 
-#sidebar {
-  border: 2px solid blue;
-  width: 17.5%;
+.menu {
+  position: relative;
+}
+
+#profileItem {
+  border-bottom: 1px solid grey;
+}
+
+#signOutItem,
+#profileItem {
+  display: flex;
+  gap: 12px;
+  background-color: #9ca3af;
+  padding: 5px;
+  align-items: center;
+}
+
+#dropdownContainer::before {
+  content: '';
+  position: absolute;
+  top: -14px;
+  right: 7px;
+  margin: 0 auto;
+  border-top: none;
+  border-left: 15px solid transparent;
+  border-right: 15px solid transparent;
+  border-bottom: 15px solid #9ca3af;
+}
+li {
+  list-style-type: none;
+}
+#myProfileWrapper {
+  display: grid;
+  grid-template-rows: .1fr .1fr .1fr;
+  justify-content: center;
+  color: white;
+}
+
+#myProfileHeader h4 {
   height: 100%;
-  background-color: #404040;
-  border: 1px solid grey;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+}
+#myProfileHeader {
+  justify-content: center;
+  grid-column: 1 / span 4;
+  align-items: center;
+  gap: 2em;
+}
+
+#myProfileHeader,
+#myProfileStats {
+  display: flex;
+  gap: 2em;
+}
+
+#myProfileStats {
+  grid-row-start: 2;
+  grid-column: 1 / span 4;
+  color: white;
+}
+#myProfilePersonalInfo {
+  grid-row-start: 3;
+}
+
+#main {
+  height: 100%;
+}
+
+#dropdownContainer {
+  position: absolute;
+  top: 60px;
+  right: 0;
+  background-color: white;
+  column-gap: 8px;
+  row-gap: 8px;
+  display: none;
+}
+
+ul {
+  list-style: none;
+}
+
+.menuItem {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
 }
 
 header {
-  border: 2px solid red;
   background-color: #e2e8f0;
   display: flex;
   justify-content: space-between;
 }
 
 #iconsContainer {
-  border: 2px solid red;
-  width: 15%;
-  gap: 32px;
   display: flex;
-
+  justify-content: center;
+  align-items: center;
+  column-gap: 32px;
 }
 
-.headerEle  
 #signUpContainer {
   display: flex;
   flex-direction: column;
   gap: 0.7em;
 }
+
 #loginRoute,
 #signUpBox {
   display: flex;
@@ -72,7 +153,7 @@ header {
   font-size: 16px;
 }
 
-#myForm{
+#myForm {
   display: flex;
   flex-direction: column;
   justify-items: center;
@@ -82,6 +163,7 @@ header {
 .list-group {
   background-color: #262626;
 }
+
 .input-group {
   justify-content: center;
   align-items: center;
@@ -92,11 +174,13 @@ header {
   top: 0;
   left: 0;
 }
+
 #carouselImage {
   position: absolute;
   left: 5em;
   border-radius: 45px;
 }
+
 #emptyScreen {
   position: relative;
   z-index: 100;

@@ -21,10 +21,11 @@ const Main = () => {
         <>
             {loading ?
                 <div>
-                    ...
+                    is this being true
                 </div> :
                 <>
                     <Header displayName={auth.currentUser.displayName} />
+                    <div className="test">teasdfdjlk;</div>
                 </>}
 
         </>
