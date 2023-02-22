@@ -7,11 +7,9 @@ import SignUp from './components/SignUp';
 import Login from './components/Login';
 import Main from './components/Main';
 import Profile from './components/Profile';
+import Upload from './components/Upload';
 
 function App() {
-  useEffect(() => {
-    console.log('asdfdsf')
-  })
   return (
     <>
       <BrowserRouter>
@@ -20,6 +18,7 @@ function App() {
           <Route path='/login' element={<Login />} />
           <Route path='/main' element={<Main />} />
           <Route path='/profile' element={<Profile />} />
+          <Route path='/upload' element={<Upload /> } />
         </Routes>
       </BrowserRouter>
     </>

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, signOut, updateProfile } from 'firebase/auth'
+import { createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, signOut, updatePassword, updateProfile } from 'firebase/auth'
 import { auth } from '../firebase-config.js'
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
@@ -9,10 +9,15 @@ import image1 from '../images/carousel_img1.jpg'
 import image2 from '../images/carousel_img2.jpg'
 import empty_screen from '../images/empty_screen.png'
 import { Link } from 'react-router-dom';
+import { collection, getDocs, addDoc, setDoc, doc } from 'firebase/firestore'
+import { db } from '../firebase-config'
+import { v4 } from 'uuid'
 
 
 const carouselImages = [image1, image2]
 const SignUp = () => {
+
+    const usersCollectionRef = collection(db, "users");
 
     const [currentIndex, setCurrentIndex] = useState(0);
     useEffect(() => {
@@ -38,34 +43,17 @@ const SignUp = () => {
 
     const [fullName, setFullName] = useState({})
 
-
-    // useEffect(() => {
-    //     onAuthStateChanged(auth, (currentUser) => {
-    //         setUser(currentUser);
-
-    //     })
-    //     console.log(auth);
-    // })
-
-
-
     const register = async (e) => {
         try {
-            const user = await createUserWithEmailAndPassword(auth, registerEmail, registerPassword);
-            const username = await updateProfile(auth.currentUser, { displayName: userName })
-
+            const user = await createUserWithEmailAndPassword(auth, registerEmail, registerPassword).then(async (res) => {
+                await updateProfile(auth.currentUser, {displayName: userName})
+            })
+            await setDoc(doc(db, "users", registerEmail), { name: registerEmail, password: registerPassword, username: userName, user_uid: v4() })
         } catch (error) {
             console.log(error.message);
         }
 
     }
-    const logout = async () => {
-        await signOut(auth);
-
-    }
-
-
-
     return (
         <div id='signUpPage'>
             <div className="carousel">
@@ -91,7 +79,7 @@ const SignUp = () => {
                             <Form.Group className='mb-3'>
                                 <Form.Control onChange={(e) => setRegisterPassword(e.target.value)} size='sm' type='password' placeholder='Password' />
                             </Form.Group>
-                            <Link onClick={(e) => register(e)} to={'/homepage'} state={{ userName: userName, email: registerEmail }} >
+                            <Link onClick={(e) => register(e)} to={'/main'} >
                                 <Button className='btn btn-secondary'>Sign Up</Button>
                             </Link>
 
@@ -101,7 +89,7 @@ const SignUp = () => {
                     </div>
                 </div>
                 <div id="loginRoute">
-                    <span>Have an account? 
+                    <span>Have an account?
                         <Link to={"/login"} >
                             &nbsp;Log in
                         </Link>

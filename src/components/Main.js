@@ -6,7 +6,6 @@ import Header from "./Header.js";
 const Main = () => {
     const [loading, setLoading] = useState(true)
     useEffect(() => {
-        console.log(auth);
         onAuthStateChanged(auth, (currentUser) => {
             if (currentUser) {
                 setLoading(false)
@@ -16,12 +15,11 @@ const Main = () => {
             }
         })
     })
-    console.log(loading)
     return (
         <>
             {loading ?
-                <div>
-                    is this being true
+                <div className="test">
+                    is this being rendered
                 </div> :
                 <>
                     <Header displayName={auth.currentUser.displayName} />

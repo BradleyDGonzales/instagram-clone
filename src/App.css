@@ -104,6 +104,14 @@ li {
 ul {
   list-style: none;
 }
+.test {
+  color: white;
+}
+#captionBox {
+  resize: none;
+  background-color: transparent;
+  color: white;
+}
 
 .menuItem {
   display: flex;
