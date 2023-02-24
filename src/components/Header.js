@@ -17,15 +17,13 @@ const Header = ({ displayName }) => {
             if (user) {
                 try {
                     const docRef = doc(db, "users", user.email);
-
-                    /* quota exceeded for tonight, thought about setting currentUser to the docSnap.data().username,
-                       this way we can set the displayName to currentUser and not have to wait for displayName cuz 
-                       it's always null upon registering an account. in short, get displayname from user's database (by email) and not from auth.currentUser.displayName
-                       see line 67 to see a possible solution
-                    */
                     const docSnap = await getDoc(docRef);
-
-                    setCurrentUser(docSnap.data().username)
+                    try {
+                        setCurrentUser(docSnap.data().username)
+                    }
+                    catch {
+                        console.log('waiting for docSnap data..')
+                    }
                     console.log(docSnap.data());
                 }
                 catch(error) {
@@ -61,22 +59,22 @@ const Header = ({ displayName }) => {
                         <img style={style} src={homeLogo} alt="homeLogo" id="homeLogo" />
                     </Link>
                     <img style={style} src={messagesLogo} alt="messagesLogo" id="messagesLogo" />
-                    <Link to={"/upload"} state={{ displayName: auth.currentUser.displayName }} >
+                    <Link to={"/upload"} state={{ displayName: currentUser }} >
                         <img style={style} src={newPostLogo} alt="newPostLogo" id="newPostLogo" />
                     </Link>
                     <div className="menu">
                         <img onClick={() => handleProfileLogoClick()} style={style} src={profileLogo} alt="profileLogo" id="profileLogo" />
                         <div id='dropdownContainer'>
                             <div id="profileItem">
-                                <img style={menuStyle} src={profileLogo} />
-                                <Link to={"/profile"} state={{ displayName: auth.currentUser.displayName }}> 
+                                <img alt="profileLogo" style={menuStyle} src={profileLogo} />
+                                <Link to={"/profile"} state={{ displayName: currentUser }}> 
                                 {/* should probably not send anything in link but instead we can set the displayName to currentUser since we get the username from
                                 db and not from auth.currentUser.displayName */}
-                                    @{displayName} 
+                                    @{currentUser} 
                                 </Link>
                             </div>
                             <div id="signOutItem">
-                                <img style={menuStyle} src={logoutLogo} />
+                                <img alt="logoutLogo" style={menuStyle} src={logoutLogo} />
                                 <Link to={"/login"} onClick={logout}>
                                     Log Out
                                 </Link>

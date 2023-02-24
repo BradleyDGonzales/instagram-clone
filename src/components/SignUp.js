@@ -48,7 +48,7 @@ const SignUp = () => {
             const user = await createUserWithEmailAndPassword(auth, registerEmail, registerPassword).then(async (res) => {
                 await updateProfile(auth.currentUser, {displayName: userName})
             })
-            await setDoc(doc(db, "users", registerEmail), { name: registerEmail, password: registerPassword, username: userName, user_uid: v4() })
+            await setDoc(doc(db, "users", registerEmail), { name: registerEmail, password: registerPassword, username: userName, user_uid: auth.currentUser.uid})
         } catch (error) {
             console.log(error.message);
         }

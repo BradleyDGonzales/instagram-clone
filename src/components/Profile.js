@@ -9,7 +9,7 @@ const Profile = () => {
     return (
         <>
             <Header displayName={displayName} />
-            <div id="main" >
+            <div id="mainContainer" >
                 <div id="myProfileWrapper">
                     <div className="test" id="myProfileHeader">
                         <h4>@{displayName}</h4>
