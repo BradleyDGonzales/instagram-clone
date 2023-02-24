@@ -17,7 +17,7 @@ import { v4 } from 'uuid'
 const carouselImages = [image1, image2]
 const SignUp = () => {
 
-    const usersCollectionRef = collection(db, "users");
+
 
     const [currentIndex, setCurrentIndex] = useState(0);
     useEffect(() => {
@@ -46,6 +46,7 @@ const SignUp = () => {
     const register = async (e) => {
         try {
             const user = await createUserWithEmailAndPassword(auth, registerEmail, registerPassword).then(async (res) => {
+                console.log(res)
                 await updateProfile(auth.currentUser, {displayName: userName})
             })
             await setDoc(doc(db, "users", registerEmail), { name: registerEmail, password: registerPassword, username: userName, user_uid: auth.currentUser.uid})
