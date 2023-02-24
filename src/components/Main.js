@@ -31,6 +31,7 @@ const Main = () => {
             const data = await getDocs(usersColRef);
             let tempArray = [];
             data.docs.map((doc) => {
+                if (searchText === '') return;
                 if (doc.data().username.includes(searchText)) {
                     tempArray.push(doc.data().username);
                     currentArray = tempArray;
@@ -43,7 +44,6 @@ const Main = () => {
         setSearchedUsers(currentArray)
     }
     useEffect(() => {
-        console.log('??')
         searchUser()
     })
     return (
