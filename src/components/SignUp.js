@@ -49,7 +49,7 @@ const SignUp = () => {
                 console.log(res)
                 await updateProfile(auth.currentUser, {displayName: userName})
             })
-            await setDoc(doc(db, "users", registerEmail), { name: registerEmail, password: registerPassword, username: userName, user_uid: auth.currentUser.uid})
+            await setDoc(doc(db, "users", registerEmail), { email: registerEmail, password: registerPassword, username: userName, user_uid: auth.currentUser.uid, followers: 0, following: 0, postsCount: 0, fullName: fullName})
         } catch (error) {
             console.log(error.message);
         }

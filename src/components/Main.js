@@ -1,12 +1,12 @@
 import { onAuthStateChanged } from "firebase/auth";
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { auth, db } from '../firebase-config.js'
 import Header from "./Header.js";
 import profileLogo from '../images/profile.svg'
 import searchLogo from '../images/magnify.svg'
 import '../App.css'
-import { collection, doc, getDocs } from "firebase/firestore";
+import { collection, doc, getDocs} from "firebase/firestore";
 const Main = () => {
     let currentArray = [];
     const pfpStyle = {
@@ -31,7 +31,7 @@ const Main = () => {
             const data = await getDocs(usersColRef);
             let tempArray = [];
             data.docs.map((doc) => {
-                if (searchText === '') return;
+                if (!searchText) return;
                 if (doc.data().username.includes(searchText)) {
                     tempArray.push(doc.data().username);
                     currentArray = tempArray;
@@ -63,7 +63,7 @@ const Main = () => {
                                 return (
                                 <div className="profileCard">
                                     <img style={pfpStyle} alt="profilePicture" src={profileLogo} />
-                                    <span>@{currentUser}</span>
+                                    <span>@<Link to="/userprofile" state={{userOfInterest: currentUser, displayName: auth.currentUser.displayName}}>{currentUser}</Link></span>
                                 </div>)
 
                             })}

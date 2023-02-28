@@ -24,14 +24,13 @@ const Header = ({ displayName }) => {
                     catch {
                         console.log('waiting for docSnap data..')
                     }
-                    console.log(docSnap.data());
                 }
                 catch(error) {
                     console.log(error)
                 }
             }
         })
-    }, [])
+    })
     const style = {
         width: '45px',
     }

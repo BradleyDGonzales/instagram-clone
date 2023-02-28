@@ -53,6 +53,9 @@ body {
 li {
   list-style-type: none;
 }
+.uploadContainer {
+  background: #262626;
+}
 header {
   position: sticky;
   top: 0;
@@ -135,9 +138,7 @@ ul {
 .test {
   color: white;
 }
-#sidebar {
 
-}
 #captionBox {
   resize: none;
   background-color: transparent;
@@ -164,12 +165,39 @@ header {
   column-gap: 32px;
 }
 
+
+#loginPageContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: #171717;
+  gap: 0.7em;
+}
 #signUpContainer {
   display: flex;
   flex-direction: column;
   gap: 0.7em;
 }
 
+#loginInfoContainer {
+  border: 1px solid grey;
+  display: flex;
+  flex-direction: column;
+  padding: 1.5em;
+  background-color: #262626;
+  align-items: center;
+
+}
+#signUpRoute {
+  border: 1px solid grey;
+  background-color: #262626;
+  color: white;
+  padding: 1em; 
+}
+#loginButton {
+  width: 100%;
+}
 #loginRoute,
 #signUpBox {
   display: flex;
@@ -223,4 +251,8 @@ header {
 #emptyScreen {
   position: relative;
   z-index: 100;
+}
+#loginPageContainer {
+  border: 2px solid red;
+  height: 100%;
 }
