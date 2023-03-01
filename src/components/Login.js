@@ -48,7 +48,7 @@ const Login = () => {
             </div>
             <div id="signUpRoute">
                     <span>Don't have an account?
-                        <Link to={"/login"} >
+                        <Link to={"/"} >
                             &nbsp;Sign Up
                         </Link>
                     </span>

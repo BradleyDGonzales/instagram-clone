@@ -9,6 +9,7 @@ import Main from './components/Main';
 import Profile from './components/Profile';
 import Upload from './components/Upload';
 import UserProfile from './components/UserProfile';
+import EditProfile from './components/EditProfile';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
           <Route path='/profile' element={<Profile />} />
           <Route path='/upload' element={<Upload /> } />
           <Route path='/userprofile' element={<UserProfile />} /> 
+          <Route path='/edit_profile' element={<EditProfile />} />
         </Routes>
       </BrowserRouter>
     </>

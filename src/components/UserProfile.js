@@ -1,3 +1,4 @@
+import { onAuthStateChanged } from "firebase/auth";
 import { addDoc, arrayRemove, arrayUnion, collection, doc, getDoc, onSnapshot, query, Query, setDoc, updateDoc, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
@@ -7,11 +8,10 @@ import Header from "./Header";
 
 const UserProfile = () => {
     const location = useLocation();
-    let user = [{}]
+    let user = []
     const { userOfInterest } = location.state;
     const { displayName } = location.state;
-    console.log(location.state);
-    const [currentUser, setCurrentUser] = useState([]);
+    const [currentUser, setCurrentUser] = useState('');
 
     useEffect(() => {
         const usersRef = collection(db, "users")
@@ -27,35 +27,44 @@ const UserProfile = () => {
     }, [])
 
     const handleFollowButton = async () => {
+        const userDocRef = doc(db, "users", currentUser[0].email);
+        const docRef = doc(db, "users", auth.currentUser.email);
         if (document.getElementById('followButton').textContent === 'Follow') {
-            const docRef = doc(db, "users", auth.currentUser.email);
             await updateDoc(docRef, {
                 following: arrayUnion(userOfInterest)
+            });
+            await updateDoc(userDocRef, {
+                followers: arrayUnion(auth.currentUser.displayName)
             })
             document.getElementById('followButton').textContent = 'Following'
         }
         else {
-            const docRef = doc(db, "users", auth.currentUser.email);
             await updateDoc(docRef, {
-                following: arrayRemove(userOfInterest)
+                following: arrayRemove(userOfInterest),
+            })
+            await updateDoc(userDocRef, {
+                followers: arrayRemove(auth.currentUser.displayName),
             })
             document.getElementById('followButton').textContent = 'Follow'
         }
     }
     const handleFollowButtonText = async () => {
         const docRef = doc(db, "users", auth.currentUser.email);
-        const docSnap = await getDoc(docRef)
-        if (docSnap.data().following.includes(userOfInterest)) {
-            document.getElementById('followButton').textContent = 'Following'
-        }
-        else {
-            document.getElementById('followButton').textContent = 'Follow'
-        }
+        const docSnap = await getDoc(docRef).then((doc) => {
+            if (doc.data().following.includes(userOfInterest)) {
+                document.getElementById('followButton').textContent = 'Following'
+            }
+            else {
+                document.getElementById('followButton').textContent = 'Follow'
+            }
+        })
     }
     useEffect(() => {
-        handleFollowButtonText();
-    })
-    return (currentUser.length === 0 ? <div>test</div> :
+        onAuthStateChanged(auth, () => {
+            handleFollowButtonText();
+        })
+    });
+    return (currentUser === '' ? <div>loading...</div> :
         <>
             <Header displayName={displayName} />
             <div id="mainContainer" >
@@ -65,9 +74,9 @@ const UserProfile = () => {
                         <Button id="followButton" onClick={() => handleFollowButton()} className='btn btn-secondary'></Button>
                     </div>
                     <div className="test" id="myProfileStats">
-                        <li>4 posts</li>
-                        <li>{currentUser[0].followers} followers</li>
-                        <li>{currentUser[0].following} following</li>
+                        <li>{currentUser[0].postsCount} posts</li>
+                        <li>{currentUser[0].followers.length} followers</li>
+                        <li>{currentUser[0].following.length} following</li>
                     </div>
                     <div className="test" id="myProfilePersonalInfo" >
                         <li>{currentUser[0].fullName ? currentUser[0].fullName : `@${currentUser[0].username}`}</li>
