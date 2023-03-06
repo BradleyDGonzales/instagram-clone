@@ -18,6 +18,7 @@ const Upload = () => {
             imageURL: url,
             caption: caption,
             user: auth.currentUser.displayName,
+            email: auth.currentUser.email,
             likes: 0,
             liked_by_users: [],
             comments: [],

@@ -123,6 +123,7 @@ header {
 #mainContainer {
   display: flex;
   background-color: #171717;
+  height: fit-content;
 }
 
 #dropdownContainer {

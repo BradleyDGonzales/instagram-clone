@@ -6,7 +6,7 @@ import Header from "./Header.js";
 import profileLogo from '../images/profile.svg'
 import searchLogo from '../images/magnify.svg'
 import '../App.css'
-import { addDoc, collection, collectionGroup, doc, getDocs, query, setDoc, where } from "firebase/firestore";
+import { addDoc, arrayRemove, arrayUnion, collection, collectionGroup, doc, getDoc, getDocs, query, setDoc, where } from "firebase/firestore";
 import likeLogo from '../images/like.png'
 import sendMsgLogo from '../images/send.svg'
 const Main = () => {
@@ -18,8 +18,12 @@ const Main = () => {
     const [searchText, setSearchText] = useState("");
     const [searchedUsers, setSearchedUsers] = useState([]);
     const [userPosts, setUserPosts] = useState([]);
-    let followedUsers = []
+    const [comment, setComment] = useState("");
+    const [postsCommentsID, setPostsCommentsID] = useState([])
+
     let posts = [];
+    let comments = []
+    let postsComments = [];
     useEffect(() => {
         onAuthStateChanged(auth, async (currentUser) => {
             if (currentUser) {
@@ -30,28 +34,20 @@ const Main = () => {
                     const querySnapshot = await getDocs(usersRef);
                     querySnapshot.forEach((doc) => {
                         posts.push(doc.data());
+                        comments.push(doc.id)
                     })
+                    console.log(posts);
                     setUserPosts(posts);
+                    comments.map(async (comment) => {
+                        const test = query(collectionGroup(db, "comments"), where('postID', '==', comment));
+                        const testSnapshot = await getDocs(test);
+                        testSnapshot.forEach((doc) => {
+                            postsComments.push(doc.data())
+                            console.log(postsComments);
+                        })
+                        setPostsCommentsID(postsComments);
+                    })
                 })
-
-
-
-                // (async function() {
-                //     const docRef = doc(db, "users", auth.currentUser.email);
-                //     const q = query(docRef, where("username", "==", 'shyseus'))
-                //     console.log(q);
-                //     const colRef = collection(docRef, "posts");
-
-                //     console.log(colRef);
-                //     // await addDoc(colRef, {
-                //     //     imageURL: url,
-                //     //     caption: caption,
-                //     //     user: auth.currentUser.displayName,
-                //     //     likes: 0,
-                //     //     liked_by_users: [],
-                //     //     comments: [],
-                //     // })
-                // })();
             }
             else {
                 setLoading(true);
@@ -90,27 +86,53 @@ const Main = () => {
         })
         return followedUsers;
     }
-    const submitComment = async (imageURL) => {
-        console.log(imageURL)
+    const handlePostLike = async (imageURL) => {
+        console.log(imageURL);
         const postsRef = query(collectionGroup(db, "posts"), where('imageURL', '==', imageURL));
-        // postsRef.collection("comments").add({
-        //     test: "test",
-        // })
-        // await addDoc(postsRef1,"comments", {comment: "test"} )
-        // await setDoc(doc(db, "users", registerEmail), { email: registerEmail, password: registerPassword, username: userName, user_uid: auth.currentUser.uid, followers: [], following: [], postsCount: 0, fullName: fullName})
         const querySnapshot = await getDocs(postsRef)
-        querySnapshot.forEach((doc) => {
+        const queryData = querySnapshot.docs.map((doc) => ({
+            ...doc.data(),
+            id: doc.id,
+        }));
+        queryData.map(async (post) => {
+            const docRef = doc(db, `users`, post.email, "posts", post.id);
+            if (!post.liked_by_users.includes(auth.currentUser.displayName)) {
+                await setDoc(docRef, {
+                    likes: post.likes + 1,
+                    liked_by_users: arrayUnion(auth.currentUser.displayName)
+                }, { merge: true })
+                document.querySelector(`[data-imageurl="${imageURL}Likes"]`).textContent = parseInt(document.querySelector(`[data-imageurl="${imageURL}Likes"]`).textContent) + 1 + " Likes"
+                
+            }
+            else {
+                await setDoc(docRef, {
+                    likes: post.likes - 1,
+                    liked_by_users: arrayRemove(auth.currentUser.displayName)
+                }, { merge: true })
+                document.querySelector(`[data-imageurl="${imageURL}Likes"]`).textContent = parseInt(document.querySelector(`[data-imageurl="${imageURL}Likes"]`).textContent) - 1 + " Likes"
+            }
+
+
         })
-        await setDoc(postsRef, {
-            test: "test"
+
+    }
+    const submitComment = async (imageURL) => {
+        const postsRef = query(collectionGroup(db, "posts"), where('imageURL', '==', imageURL));
+        const querySnapshot = await getDocs(postsRef);
+        const queryData = querySnapshot.docs.map((doc) => ({
+            ...doc.data(),
+            id: doc.id,
+        }))
+        console.log(queryData);
+        queryData.map(async (post) => {
+            const docRef = doc(db, `users`, post.email);
+            const colRef = collection(docRef, `posts/${post.id}/comments`)
+            await addDoc(colRef, {
+                user: auth.currentUser.displayName,
+                comment: comment,
+                postID: post.id
+            })
         })
-        // await addDoc(collection(postsRef, "comments"), {
-        //     comment: "test"
-        // });
-        // const querySnapshot = await getDocs(usersRef);
-        // querySnapshot.forEach((doc) => {
-        //     posts.push(doc.data());
-        // })
     }
     return (
         <>
@@ -139,12 +161,15 @@ const Main = () => {
                                 return (
                                     <div className="card text-white bg-dark mb-3">
                                         <p>@{post.user}</p>
-                                        <img width={"200px"} src={post.imageURL} alt="userPost" />
-                                        <img data-imageurl={post.imageURL} width={"50px"} src={likeLogo} alt="likeLogo"></img>
-                                        <p>{post.likes} likes</p>
-                                        <p>{post.caption}</p>
+                                        <img width={"300px"} src={post.imageURL} alt="userPost" />
+                                        <img className="likeLogo" data-imageurl={post.imageURL} width={"30px"} src={likeLogo} alt="likeLogo" onClick={(e) => handlePostLike(e.target.getAttribute("data-imageurl"))} />
+                                        <p className="postLikes" data-imageurl={`${post.imageURL}Likes`} >{post.likes} likes</p>
+                                        <p>{<strong>{post.user}</strong>} {post.caption}</p>
+                                        {postsCommentsID.length === 0 ? null : postsCommentsID.map((doc) => {
+                                            return (<p><strong>{doc.user}</strong> {doc.comment}</p>)
+                                        })}
                                         <div id="addComment">
-                                            <input type="text" placeholder="Add a comment" />
+                                            <input onChange={(e) => setComment(e.target.value)} type="text" placeholder="Add a comment" />
                                             <img data-imageurl={post.imageURL} alt="sendMsgLogo" onClick={(e) => submitComment(e.target.getAttribute("data-imageurl"))} width={"25px"} src={sendMsgLogo}></img>
                                         </div>
                                     </div>)
