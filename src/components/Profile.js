@@ -4,7 +4,7 @@ import { auth, db } from '../firebase-config.js'
 import { Button } from "react-bootstrap";
 import { useEffect, useState } from "react";
 import { onAuthStateChanged, updateProfile } from "firebase/auth";
-import { collection, doc, getDoc, getDocs, onSnapshot, query, updateDoc, where } from "firebase/firestore";
+import { collection, collectionGroup, doc, getDoc, getDocs, onSnapshot, query, updateDoc, where } from "firebase/firestore";
 import Modal from "./Modal";
 
 const Profile = () => {
@@ -13,28 +13,6 @@ const Profile = () => {
     let user = [];
     const [currentUser, setCurrentUser] = useState('')
     const [openModal, setOpenModal] = useState(false);
-    // onAuthStateChanged(auth, async (currentUser) => {
-    //     if (currentUser) {
-    //         setLoading(false);
-    //         let followedUsers = await getFollowedUsers(currentUser.displayName)
-    //         followedUsers[0].map(async (user) => {
-    //             const usersRef = query(collectionGroup(db, "posts"), where('user', '==', user));
-    //             const querySnapshot = await getDocs(usersRef);
-    //             querySnapshot.forEach((doc) => {
-    //                 posts.push(doc.data());
-    //                 comments.push(doc.id)
-    //             })
-    //             console.log(posts);
-    //             console.log(comments)
-    //             setUserPosts(posts);
-    //             await loadComments(comments)
-    //         })
-
-    //     }
-    //     else {
-    //         setLoading(true);
-    //     }
-    // })
     useEffect(() => {
         onAuthStateChanged(auth, async (currentUser) => {
             if (currentUser) {
@@ -56,9 +34,25 @@ const Profile = () => {
         console.log(values)
         values.forEach(async (value) => {
             if (value.name === 'username' && value.value !== '') {
+                const prevUsername = auth.currentUser.displayName
+                console.log(prevUsername);
+                await updateProfile(auth.currentUser, {displayName: value.value})
                 await updateDoc(doc(db, "users", auth.currentUser.email), {
                     username: value.value
                 })
+                const test = query(collectionGroup(db, "comments"), where('user', '==', prevUsername));
+                const testData = await getDocs(test)
+                let currentPostID = [];
+                testData.forEach(async (doc) => {
+                    currentPostID.push(doc.data().postID)
+                })
+                console.log(currentPostID)
+                currentPostID.map(async (postID) => {
+                    const getPosts = doc(db, "comments", postID);
+                    const postData = await getDoc(getPosts);
+                    console.log(postData);
+                })
+                // getPostsData.forEach((post) => console.log(post.data()))
             }
             else if (value.name === 'name') {
                 await updateDoc(doc(db, "users", auth.currentUser.email), {

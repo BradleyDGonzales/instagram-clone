@@ -6,7 +6,7 @@ import Header from "./Header.js";
 import profileLogo from '../images/profile.svg'
 import searchLogo from '../images/magnify.svg'
 import '../App.css'
-import { addDoc, arrayRemove, arrayUnion, collection, collectionGroup, doc, getDoc, getDocs, query, serverTimestamp, setDoc, where } from "firebase/firestore";
+import { addDoc, arrayRemove, arrayUnion, collection, collectionGroup, doc, getDoc, getDocs, query, serverTimestamp, setDoc, updateDoc, where } from "firebase/firestore";
 import likeLogo from '../images/like.png'
 import sendMsgLogo from '../images/send.svg'
 const Main = () => {
@@ -23,7 +23,6 @@ const Main = () => {
 
     let posts = [];
     let comments = []
-    let postsComments = [];
     useEffect(() => {
         onAuthStateChanged(auth, async (currentUser) => {
             if (currentUser) {
@@ -131,15 +130,29 @@ const Main = () => {
             id: doc.id,
         }))
         console.log(queryData);
-        queryData.map(async (post) => {
-            const docRef = doc(db, `users`, post.email);
-            const colRef = collection(docRef, `posts/${post.id}/comments`)
+        queryData.map(async (currentPost) => {
+            const docRef = doc(db, `users`, currentPost.email);
+            const colRef = collection(docRef, `posts/${currentPost.id}/comments`)
             await addDoc(colRef, {
                 user: auth.currentUser.displayName,
                 comment: comment,
-                postID: post.id,
+                postID: currentPost.id,
                 timestamp: serverTimestamp(),
             })
+            const postID = await getDocs(colRef);
+
+            // tried to get the postID play around with this. idea is to put the comments doc id into the comment fields itself as commentsID so we can change
+            // the user field to the new username provided by edit profile. 
+            // postID.forEach(async (post) => {
+            //     console.log(post.data())
+            //     console.log(post.id)
+            //     console.log(`currentpostid is ${currentPost.id}`)
+            //     await setDoc(doc(db, "posts", currentPost.id, "comments", post.id), {
+            //         commentpostID: post.id,
+            //     }, {merge: true})
+    
+            // })
+
         })
     }
     return (
