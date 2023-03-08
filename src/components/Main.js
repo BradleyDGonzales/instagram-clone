@@ -6,7 +6,7 @@ import Header from "./Header.js";
 import profileLogo from '../images/profile.svg'
 import searchLogo from '../images/magnify.svg'
 import '../App.css'
-import { addDoc, arrayRemove, arrayUnion, collection, collectionGroup, doc, getDoc, getDocs, query, setDoc, where } from "firebase/firestore";
+import { addDoc, arrayRemove, arrayUnion, collection, collectionGroup, doc, getDoc, getDocs, query, serverTimestamp, setDoc, where } from "firebase/firestore";
 import likeLogo from '../images/like.png'
 import sendMsgLogo from '../images/send.svg'
 const Main = () => {
@@ -28,7 +28,7 @@ const Main = () => {
         onAuthStateChanged(auth, async (currentUser) => {
             if (currentUser) {
                 setLoading(false);
-                let followedUsers = await getFollowedUsers(currentUser.displayName)
+                let followedUsers = await getFollowedUsers(currentUser.email)
                 followedUsers[0].map(async (user) => {
                     const usersRef = query(collectionGroup(db, "posts"), where('user', '==', user));
                     const querySnapshot = await getDocs(usersRef);
@@ -37,23 +37,30 @@ const Main = () => {
                         comments.push(doc.id)
                     })
                     console.log(posts);
+                    console.log(comments)
                     setUserPosts(posts);
-                    comments.map(async (comment) => {
-                        const test = query(collectionGroup(db, "comments"), where('postID', '==', comment));
-                        const testSnapshot = await getDocs(test);
-                        testSnapshot.forEach((doc) => {
-                            postsComments.push(doc.data())
-                            console.log(postsComments);
-                        })
-                        setPostsCommentsID(postsComments);
-                    })
+                    await loadComments(comments)
                 })
+
             }
             else {
                 setLoading(true);
             }
         })
     }, [])
+    const loadComments = async (comments) => {
+        let testSnapshot = [];
+        comments.map(async (comment) => {
+            let flag = true;
+            const test = query(collectionGroup(db, "comments"), where('postID', '==', comment));
+            const testData = await getDocs(test).then(flag = false)
+            testData.forEach((doc) => {
+                testSnapshot.push(doc.data())
+            })
+            setPostsCommentsID(testSnapshot);
+        });
+        console.log(testSnapshot);
+    }
     const searchUser = () => {
         const usersColRef = collection(db, "users")
         const getUsers = async () => {
@@ -79,7 +86,7 @@ const Main = () => {
         let followedUsers = [];
         console.log(currentUser)
         const docRef = collection(db, "users");
-        const q = query(docRef, where("username", "==", currentUser));
+        const q = query(docRef, where("email", "==", currentUser));
         const querySnapshot = await getDocs(q);
         querySnapshot.forEach((doc) => {
             followedUsers.push(doc.data().following);
@@ -102,7 +109,7 @@ const Main = () => {
                     liked_by_users: arrayUnion(auth.currentUser.displayName)
                 }, { merge: true })
                 document.querySelector(`[data-imageurl="${imageURL}Likes"]`).textContent = parseInt(document.querySelector(`[data-imageurl="${imageURL}Likes"]`).textContent) + 1 + " Likes"
-                
+
             }
             else {
                 await setDoc(docRef, {
@@ -117,7 +124,7 @@ const Main = () => {
 
     }
     const submitComment = async (imageURL) => {
-        const postsRef = query(collectionGroup(db, "posts"), where('imageURL', '==', imageURL));
+        const postsRef = query(collectionGroup(db, "posts"), where('imageURL', '==', imageURL))
         const querySnapshot = await getDocs(postsRef);
         const queryData = querySnapshot.docs.map((doc) => ({
             ...doc.data(),
@@ -130,7 +137,8 @@ const Main = () => {
             await addDoc(colRef, {
                 user: auth.currentUser.displayName,
                 comment: comment,
-                postID: post.id
+                postID: post.id,
+                timestamp: serverTimestamp(),
             })
         })
     }
@@ -162,12 +170,14 @@ const Main = () => {
                                     <div className="card text-white bg-dark mb-3">
                                         <p>@{post.user}</p>
                                         <img width={"300px"} src={post.imageURL} alt="userPost" />
-                                        <img className="likeLogo" data-imageurl={post.imageURL} width={"30px"} src={likeLogo} alt="likeLogo" onClick={(e) => handlePostLike(e.target.getAttribute("data-imageurl"))} />
-                                        <p className="postLikes" data-imageurl={`${post.imageURL}Likes`} >{post.likes} likes</p>
+                                        <img className="likeLogo" data-postid={post.postID} data-imageurl={post.imageURL} width={"30px"} src={likeLogo} alt="likeLogo" onClick={(e) => handlePostLike(e.target.getAttribute("data-imageurl"))} />
+                                        <p className="postLikes" data-postid={post.postID} data-imageurl={`${post.imageURL}Likes`}>{post.likes === 1 ? `${post.likes} like` : `${post.likes} likes`}</p>
                                         <p>{<strong>{post.user}</strong>} {post.caption}</p>
-                                        {postsCommentsID.length === 0 ? null : postsCommentsID.map((doc) => {
-                                            return (<p><strong>{doc.user}</strong> {doc.comment}</p>)
-                                        })}
+                                        <div className="postComments" data-postid={post.postID}>
+                                            {postsCommentsID.length === 0 ? null : postsCommentsID.map((doc) => {
+                                                if (doc.postID === post.postID) return (<p><strong>{doc.user}</strong> {doc.comment}</p>)
+                                            })}
+                                        </div>
                                         <div id="addComment">
                                             <input onChange={(e) => setComment(e.target.value)} type="text" placeholder="Add a comment" />
                                             <img data-imageurl={post.imageURL} alt="sendMsgLogo" onClick={(e) => submitComment(e.target.getAttribute("data-imageurl"))} width={"25px"} src={sendMsgLogo}></img>

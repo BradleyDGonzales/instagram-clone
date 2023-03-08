@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { auth, db, storage } from "../firebase-config";
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 import { v4 } from 'uuid'
-import { addDoc, collection, doc, setDoc } from "firebase/firestore";
+import { addDoc, collection, doc, getDocs, serverTimestamp, setDoc } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 const Upload = () => {
     const location = useLocation();
@@ -22,6 +22,14 @@ const Upload = () => {
             likes: 0,
             liked_by_users: [],
             comments: [],
+            timestamp: serverTimestamp(),
+        })
+        const postID = await getDocs(colRef);
+        postID.forEach(async (post) => {
+            await setDoc(doc(db, "users", auth.currentUser.email, "posts", post.id), {
+                postID: post.id,
+            }, { merge: true})
+
         })
 
     }
