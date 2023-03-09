@@ -44,14 +44,19 @@ const Profile = () => {
                 const testData = await getDocs(test)
                 let currentPostID = [];
                 testData.forEach(async (doc) => {
-                    currentPostID.push(doc.data().postID)
+                    console.log(doc.data())
+                    currentPostID.push(doc.data())
                 })
-                console.log(currentPostID)
-                currentPostID.map(async (postID) => {
-                    const getPosts = doc(db, "comments", postID);
-                    const postData = await getDoc(getPosts);
-                    console.log(postData);
+                currentPostID.map(async (post) => {
+                    await updateDoc(doc(db, "users", post.postCreatorEmail, "posts", post.postID, "comments", post.commentPostID), {
+                        user: value.value
+                    })
                 })
+                // currentPostID.map(async (postID) => {
+                //     const getPosts = doc(db, "comments", postID);
+                //     const postData = await getDoc(getPosts);
+                //     console.log(postData)
+                // })
                 // getPostsData.forEach((post) => console.log(post.data()))
             }
             else if (value.name === 'name') {

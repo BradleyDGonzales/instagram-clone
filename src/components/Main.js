@@ -1,6 +1,6 @@
 import { onAuthStateChanged } from "firebase/auth";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Await, Link } from "react-router-dom";
 import { auth, db } from '../firebase-config.js'
 import Header from "./Header.js";
 import profileLogo from '../images/profile.svg'
@@ -130,30 +130,47 @@ const Main = () => {
             id: doc.id,
         }))
         console.log(queryData);
+        let postID = queryData[0].id;
+        let currentPostEmail = queryData[0].email
         queryData.map(async (currentPost) => {
             const docRef = doc(db, `users`, currentPost.email);
             const colRef = collection(docRef, `posts/${currentPost.id}/comments`)
             await addDoc(colRef, {
                 user: auth.currentUser.displayName,
+                email: auth.currentUser.email,
+                postCreatorEmail: currentPost.email,
                 comment: comment,
                 postID: currentPost.id,
                 timestamp: serverTimestamp(),
             })
-            const postID = await getDocs(colRef);
-
-            // tried to get the postID play around with this. idea is to put the comments doc id into the comment fields itself as commentsID so we can change
-            // the user field to the new username provided by edit profile. 
-            // postID.forEach(async (post) => {
-            //     console.log(post.data())
-            //     console.log(post.id)
-            //     console.log(`currentpostid is ${currentPost.id}`)
-            //     await setDoc(doc(db, "posts", currentPost.id, "comments", post.id), {
-            //         commentpostID: post.id,
-            //     }, {merge: true})
-    
-            // })
-
         })
+        console.log(postID)
+        console.log(currentPostEmail);
+        const docRef = doc(db, 'users', currentPostEmail);
+        const colRef= collection(docRef, 'posts', postID, 'comments');
+        const test = await getDocs(colRef)
+        console.log(test)
+        test.forEach(async (aw) => {
+            await setDoc(doc(db, 'users', currentPostEmail, 'posts', postID, 'comments', aw.id), {
+                commentPostID: aw.id,
+            }, {merge: true})
+            // console.log(aw.id)
+            // console.log(aw.data())
+            // await updateDoc(colRef, {
+            //     test: 'test'
+            // })
+        })
+        // tried to get the postID play around with this. idea is to put the comments doc id into the comment fields itself as commentsID so we can change
+        // the user field to the new username provided by edit profile. 
+        // postID.forEach(async (post) => {
+        //     console.log(post.data())
+        //     console.log(post.id)
+        //     console.log(`currentpostid is ${currentPost.id}`)
+        //     await setDoc(doc(db, "posts", currentPost.id, "comments", post.id), {
+        //         commentpostID: post.id,
+        //     }, {merge: true})
+
+        // })
     }
     return (
         <>
