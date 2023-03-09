@@ -90,6 +90,7 @@ const Main = () => {
         querySnapshot.forEach((doc) => {
             followedUsers.push(doc.data().following);
         })
+        console.log(followedUsers);
         return followedUsers;
     }
     const handlePostLike = async (imageURL) => {

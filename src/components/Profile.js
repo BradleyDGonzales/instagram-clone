@@ -4,7 +4,7 @@ import { auth, db } from '../firebase-config.js'
 import { Button } from "react-bootstrap";
 import { useEffect, useState } from "react";
 import { onAuthStateChanged, updateProfile } from "firebase/auth";
-import { collection, collectionGroup, doc, getDoc, getDocs, onSnapshot, query, updateDoc, where } from "firebase/firestore";
+import { arrayRemove, arrayUnion, collection, collectionGroup, doc, getDoc, getDocs, onSnapshot, query, updateDoc, where } from "firebase/firestore";
 import Modal from "./Modal";
 
 const Profile = () => {
@@ -35,29 +35,90 @@ const Profile = () => {
         values.forEach(async (value) => {
             if (value.name === 'username' && value.value !== '') {
                 const prevUsername = auth.currentUser.displayName
-                console.log(prevUsername);
+
                 await updateProfile(auth.currentUser, {displayName: value.value})
                 await updateDoc(doc(db, "users", auth.currentUser.email), {
                     username: value.value
                 })
-                const test = query(collectionGroup(db, "comments"), where('user', '==', prevUsername));
-                const testData = await getDocs(test)
-                let currentPostID = [];
-                testData.forEach(async (doc) => {
-                    console.log(doc.data())
-                    currentPostID.push(doc.data())
+
+                //changes the username to the new username in comments
+                const comments = query(collectionGroup(db, "comments"), where('user', '==', prevUsername));
+                const commentsData = await getDocs(comments)
+                let currentCommentsData = [];
+                commentsData.forEach(async (comment) => {
+                    console.log(comment.data())
+                    currentCommentsData.push(comment.data())
                 })
-                currentPostID.map(async (post) => {
-                    await updateDoc(doc(db, "users", post.postCreatorEmail, "posts", post.postID, "comments", post.commentPostID), {
+                currentCommentsData.map(async (comment) => {
+                    await updateDoc(doc(db, "users", comment.postCreatorEmail, "posts", comment.postID, "comments", comment.commentPostID), {
                         user: value.value
                     })
                 })
-                // currentPostID.map(async (postID) => {
-                //     const getPosts = doc(db, "comments", postID);
-                //     const postData = await getDoc(getPosts);
-                //     console.log(postData)
-                // })
-                // getPostsData.forEach((post) => console.log(post.data()))
+
+                //changes the username to the new username in following
+
+                const following = query(collectionGroup(db, "users"), where('following', 'array-contains', prevUsername));
+                const followingData = await getDocs(following);
+                let currentUserData = [];
+                followingData.forEach(async (following) => {
+                    currentUserData.push(following.data())
+                })
+                currentUserData.map(async (user) => {
+                    await updateDoc(doc(db, "users", user.email), {
+                        following: arrayRemove(prevUsername),
+                    })
+                    await updateDoc(doc(db, "users", user.email), {
+                        following: arrayUnion(value.value),
+                    })
+                })
+
+                //changes the username to the new username in followers
+                const followers = query(collectionGroup(db, "users"), where('followers', 'array-contains', prevUsername));
+                const followersData = await getDocs(followers);
+                currentUserData = [];
+                followersData.forEach((async (follower) => {
+                    currentUserData.push(follower.data())
+                }))
+                currentUserData.map(async (user) => {
+                    await updateDoc(doc(db, "users", user.email), {
+                        followers: arrayRemove(prevUsername),
+                    })
+                    await updateDoc(doc(db, "users", user.email), {
+                        followers: arrayUnion(value.value),
+                    })
+                })
+
+                //changes the user to the new username in posts
+                const posts = query(collectionGroup(db, "posts"), where('user', '==', prevUsername));
+                const postsData = await getDocs(posts);
+                currentUserData = [];
+                postsData.forEach((async (post) => {
+                    currentUserData.push(post.data())
+                }))
+                currentUserData.map(async (user) => {
+                    await updateDoc(doc(db, "users", user.email, "posts", user.postID), {
+                        user: value.value
+                    })
+                })
+
+                //changes the user to the new username in posts liked_by_users field
+                const likedByUsers = query(collectionGroup(db, "posts"), where('liked_by_users', 'array-contains', prevUsername));
+                const likedByUsersData = await getDocs(likedByUsers);
+                let testData = []
+                likedByUsersData.forEach(async (post) => {
+                    testData.push(post.data())
+                })
+                console.log(testData)
+                testData.map(async (post) => {
+                    await updateDoc(doc(db, "users", post.email, "posts", post.postID), {
+                        liked_by_users: arrayRemove(prevUsername),
+                    })
+                    await updateDoc(doc(db, "users", post.email, "posts", post.postID), {
+                        liked_by_users: arrayUnion(value.value),
+                    })
+                })
+
+
             }
             else if (value.name === 'name') {
                 await updateDoc(doc(db, "users", auth.currentUser.email), {
@@ -75,15 +136,6 @@ const Profile = () => {
                 })
             }
         })
-        // const docRef = doc(db, "users", auth.currentUser.email);
-        // console.log(currentUser);
-        // await getDoc(docRef).then((doc) => setCurrentUser(doc.data()))
-        // let newData = []
-        // const docRefData = await getDoc(docRef).then((doc) => newData.push(doc.data()))
-        // setCurrentUser(newData);
-        // docRefData.forEach((doc) => {
-        //     console.log(doc.data())
-        // })
     }
     return (currentUser === '' ? <div>loading...</div> :
         <>
