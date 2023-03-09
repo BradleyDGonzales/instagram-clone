@@ -104,12 +104,12 @@ const Profile = () => {
                 //changes the user to the new username in posts liked_by_users field
                 const likedByUsers = query(collectionGroup(db, "posts"), where('liked_by_users', 'array-contains', prevUsername));
                 const likedByUsersData = await getDocs(likedByUsers);
-                let testData = []
+                let currentPostData = []
                 likedByUsersData.forEach(async (post) => {
-                    testData.push(post.data())
+                    currentPostData.push(post.data())
                 })
-                console.log(testData)
-                testData.map(async (post) => {
+                console.log(currentPostData)
+                currentPostData.map(async (post) => {
                     await updateDoc(doc(db, "users", post.email, "posts", post.postID), {
                         liked_by_users: arrayRemove(prevUsername),
                     })
