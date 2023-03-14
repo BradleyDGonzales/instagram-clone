@@ -11,6 +11,7 @@ const UserProfile = () => {
     let user = []
     const { userOfInterest } = location.state;
     const { displayName } = location.state;
+    console.log(userOfInterest, displayName);
     const [currentUser, setCurrentUser] = useState('');
 
     useEffect(() => {

@@ -1,14 +1,15 @@
 import { onAuthStateChanged } from "firebase/auth";
 import { useEffect, useState } from "react";
-import { Await, Link } from "react-router-dom";
+import commentsIcon from '../images/messages.svg'
+import { Link } from "react-router-dom";
 import { auth, db } from '../firebase-config.js'
 import Header from "./Header.js";
-import profileLogo from '../images/profile.svg'
-import searchLogo from '../images/magnify.svg'
+import profileIcon from '../images/profile.svg'
+import searchIcon from '../images/magnify.svg'
 import '../App.css'
 import { addDoc, arrayRemove, arrayUnion, collection, collectionGroup, doc, getDoc, getDocs, query, serverTimestamp, setDoc, updateDoc, where } from "firebase/firestore";
-import likeLogo from '../images/like.png'
-import sendMsgLogo from '../images/send.svg'
+import likeIcon from '../images/like.png'
+import sendCommentIcon from '../images/send.svg'
 const Main = () => {
     let currentArray = [];
     const pfpStyle = {
@@ -108,7 +109,8 @@ const Main = () => {
                     likes: post.likes + 1,
                     liked_by_users: arrayUnion(auth.currentUser.displayName)
                 }, { merge: true })
-                document.querySelector(`[data-imageurl="${imageURL}Likes"]`).textContent = parseInt(document.querySelector(`[data-imageurl="${imageURL}Likes"]`).textContent) + 1 + " Likes"
+                console.log(parseInt(document.querySelector(`[data-imageurl="${imageURL}Likes"]`).textContent.substring(0, 1)))
+                document.querySelector(`[data-imageurl="${imageURL}Likes"]`).textContent = parseInt(document.querySelector(`[data-imageurl="${imageURL}Likes"]`).textContent.substring(0, 1)) === 0 ? parseInt(document.querySelector(`[data-imageurl="${imageURL}Likes"]`).textContent) + 1 + " like" : parseInt(document.querySelector(`[data-imageurl="${imageURL}Likes"]`).textContent) + 1 + " likes"
 
             }
             else {
@@ -116,12 +118,20 @@ const Main = () => {
                     likes: post.likes - 1,
                     liked_by_users: arrayRemove(auth.currentUser.displayName)
                 }, { merge: true })
-                document.querySelector(`[data-imageurl="${imageURL}Likes"]`).textContent = parseInt(document.querySelector(`[data-imageurl="${imageURL}Likes"]`).textContent) - 1 + " Likes"
+                console.log(parseInt(document.querySelector(`[data-imageurl="${imageURL}Likes"]`).textContent.substring(0, 1)))
+                document.querySelector(`[data-imageurl="${imageURL}Likes"]`).textContent = parseInt(document.querySelector(`[data-imageurl="${imageURL}Likes"]`).textContent.substring(0, 1)) === 1 ? parseInt(document.querySelector(`[data-imageurl="${imageURL}Likes"]`).textContent) - 1 + " likes" : parseInt(document.querySelector(`[data-imageurl="${imageURL}Likes"]`).textContent) - 1 + " like"
             }
 
 
         })
 
+    }
+    const handleCommentClick = async (postID) => {
+        console.log(postID)
+        const currentPost = document.querySelector(`.addComment[data-postid="${postID}"]`)
+        console.log(currentPost);
+        currentPost.style.display = "flex";
+        currentPost.style.gap = "8px";
     }
     const submitComment = async (imageURL) => {
         const postsRef = query(collectionGroup(db, "posts"), where('imageURL', '==', imageURL))
@@ -148,30 +158,17 @@ const Main = () => {
         console.log(postID)
         console.log(currentPostEmail);
         const docRef = doc(db, 'users', currentPostEmail);
-        const colRef= collection(docRef, 'posts', postID, 'comments');
+        const colRef = collection(docRef, 'posts', postID, 'comments');
         const test = await getDocs(colRef)
         console.log(test)
         test.forEach(async (aw) => {
             await setDoc(doc(db, 'users', currentPostEmail, 'posts', postID, 'comments', aw.id), {
                 commentPostID: aw.id,
-            }, {merge: true})
-            // console.log(aw.id)
-            // console.log(aw.data())
-            // await updateDoc(colRef, {
-            //     test: 'test'
-            // })
+            }, { merge: true })
         })
-        // tried to get the postID play around with this. idea is to put the comments doc id into the comment fields itself as commentsID so we can change
-        // the user field to the new username provided by edit profile. 
-        // postID.forEach(async (post) => {
-        //     console.log(post.data())
-        //     console.log(post.id)
-        //     console.log(`currentpostid is ${currentPost.id}`)
-        //     await setDoc(doc(db, "posts", currentPost.id, "comments", post.id), {
-        //         commentpostID: post.id,
-        //     }, {merge: true})
-
-        // })
+    }
+    const getUserInfo = (username) => {
+        console.log(username)
     }
     return (
         <>
@@ -182,40 +179,50 @@ const Main = () => {
                 <>
 
                     <Header displayName={auth.currentUser.displayName} />
-                    <div id="mainContainer">
-                        <div id="sideSearchBar">
-                            <input onChange={(e) => setSearchText(e.target.value)} id="searchBar" type="text" />
-                            <img onClick={() => handleSearch()} alt="searchLogo" style={pfpStyle} src={searchLogo} />
-                            {searchedUsers.length === 0 ? null : searchedUsers.map((currentUser) => {
-                                return (
-                                    <div className="profileCard">
-                                        <img style={pfpStyle} alt="profilePicture" src={profileLogo} />
-                                        <span>@<Link to="/userprofile" state={{ userOfInterest: currentUser, displayName: auth.currentUser.displayName }}>{currentUser}</Link></span>
-                                    </div>)
+                    <div id="wrapper">
+                        <div id="sideBarContainer">
+                            <div id="sideSearchBar">
+                                <input onChange={(e) => setSearchText(e.target.value)} id="searchBar" type="text" />
+                                <img onClick={() => handleSearch()} alt="searchIcon" style={pfpStyle} src={searchIcon} />
+                                {searchedUsers.length === 0 ? null : searchedUsers.map((currentUser) => {
+                                    return (
+                                        <div className="profileCard">
+                                            <img className="profilePicture" style={pfpStyle} alt="profilePicture" src={profileIcon} />
+                                            <span className="profileUsername" >
+                                                @<Link to="/userprofile" state={{ userOfInterest: currentUser, displayName: auth.currentUser.displayName }}>{currentUser}</Link>
+                                            </span>
+                                        </div>)
+                                })}
 
-                            })}
+                            </div>
                         </div>
-                        <div className="main test">
+                        <div id="cardsContainer">
                             {userPosts.map((post) => {
                                 return (
                                     <div className="card text-white bg-dark mb-3">
-                                        <p>@{post.user}</p>
+                                        <p>@<Link to="/userprofile" state={{ userOfInterest: post.user }}>{post.user}</Link></p>
                                         <img width={"300px"} src={post.imageURL} alt="userPost" />
-                                        <img className="likeLogo" data-postid={post.postID} data-imageurl={post.imageURL} width={"30px"} src={likeLogo} alt="likeLogo" onClick={(e) => handlePostLike(e.target.getAttribute("data-imageurl"))} />
+                                        <div className="functionalities">
+                                            <img className="likeIcon" data-postid={post.postID} data-imageurl={post.imageURL} width={"30px"} src={likeIcon} alt="likeIcon" onClick={(e) => handlePostLike(e.target.getAttribute("data-imageurl"))} />
+                                            <img className="commentsLogo" data-postid={post.postID} data-imageurl={post.imageURL} width={"30px"} src={commentsIcon} alt="commentIcon" onClick={(e) => handleCommentClick(e.target.getAttribute("data-postid"))} />
+                                        </div>
                                         <p className="postLikes" data-postid={post.postID} data-imageurl={`${post.imageURL}Likes`}>{post.likes === 1 ? `${post.likes} like` : `${post.likes} likes`}</p>
-                                        <p>{<strong>{post.user}</strong>} {post.caption}</p>
+                                        <p>{<strong><Link to="/userprofile" state={{ userOfInterest: post.user }}>{post.user}</Link></strong>} {post.caption}</p>
                                         <div className="postComments" data-postid={post.postID}>
                                             {postsCommentsID.length === 0 ? null : postsCommentsID.map((doc) => {
-                                                if (doc.postID === post.postID) return (<p><strong>{doc.user}</strong> {doc.comment}</p>)
+                                                if (doc.postID === post.postID) return (<p><strong><Link to="/userprofile" state={{ userOfInterest: doc.user }}>{doc.user}</Link></strong> {doc.comment}</p>)
                                             })}
                                         </div>
-                                        <div id="addComment">
+                                        <div className="addComment" data-postid={post.postID}>
                                             <input onChange={(e) => setComment(e.target.value)} type="text" placeholder="Add a comment" />
-                                            <img data-imageurl={post.imageURL} alt="sendMsgLogo" onClick={(e) => submitComment(e.target.getAttribute("data-imageurl"))} width={"25px"} src={sendMsgLogo}></img>
+                                            <img data-imageurl={post.imageURL} alt="sendCommentIcon" onClick={(e) => submitComment(e.target.getAttribute("data-imageurl"))} width={"25px"} src={sendCommentIcon}></img>
                                         </div>
                                     </div>)
                             })}
+
+
                         </div>
+
                     </div>
                 </>}
 

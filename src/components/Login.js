@@ -30,32 +30,35 @@ const Login = () => {
     }
 
     return (
-        <div id='loginPageContainer'>
-            <div id='loginInfoContainer'>
-                <img width={200} height={75} src={logo} alt="logo" />
-                <Form id='loginForm'>
-                    <Form.Group className='mb-3'>
-                        <Form.Control onChange={(e) => setLoginEmail(e.target.value)} size='sm' type='email' placeholder='Email' />
-                    </Form.Group>
-                    <Form.Group className='mb-3'>
-                        <Form.Control onChange={(e) => setLoginPassword(e.target.value)} size='sm' type='password' placeholder='Password' />
-                    </Form.Group>
+        <div id="main">
 
-                </Form>
-                <Link to={"/main"} >
-                    <button className='btn btn-secondary' id='loginButton' onClick={login}>Login</button>
-                </Link>
-            </div>
-            <div id="signUpRoute">
+            <div id='loginPageContainer'>
+                <div id='loginInfoContainer'>
+                    <img width={200} height={75} src={logo} alt="logo" />
+                    <Form id='loginForm'>
+                        <Form.Group className='mb-3'>
+                            <Form.Control onChange={(e) => setLoginEmail(e.target.value)} size='sm' type='email' placeholder='Email' />
+                        </Form.Group>
+                        <Form.Group className='mb-3'>
+                            <Form.Control onChange={(e) => setLoginPassword(e.target.value)} size='sm' type='password' placeholder='Password' />
+                        </Form.Group>
+
+                    </Form>
+                    <Link to={"/main"} >
+                        <button className='btn btn-secondary' id='loginButton' onClick={login}>Login</button>
+                    </Link>
+                </div>
+                <div id="signUpRoute">
                     <span>Don't have an account?
                         <Link to={"/"} >
                             &nbsp;Sign Up
                         </Link>
                     </span>
                 </div>
-            <div>
-                <h4>User Logged In: {user?.email}</h4>
-                <button onClick={logout}>Sign Out</button>
+                <div>
+                    <h4>User Logged In: {user?.email}</h4>
+                    <button onClick={logout}>Sign Out</button>
+                </div>
             </div>
         </div>)
     //     <div id='signUpContainer'>

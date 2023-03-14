@@ -1,7 +1,6 @@
 import { Link, useLocation } from 'react-router-dom'
 import logo from '../images/instagram_logo.png'
 import homeLogo from '../images/home.svg'
-import messagesLogo from '../images/messages.svg'
 import newPostLogo from '../images/newPost.svg'
 import profileLogo from '../images/profile.svg'
 import logoutLogo from '../images/logout.svg'
@@ -9,7 +8,7 @@ import { auth, db } from '../firebase-config.js'
 import { onAuthStateChanged, signOut } from 'firebase/auth'
 import { useEffect, useState } from 'react'
 import { collection, doc, getDoc, getDocs } from 'firebase/firestore'
-const Header = ({ displayName }) => {
+const Header = () => {
     const [currentUser, setCurrentUser] = useState();
     const [loading, setLoading] = useState(true)
     useEffect(() => {
@@ -57,7 +56,6 @@ const Header = ({ displayName }) => {
                     <Link to={"/main"}>
                         <img style={style} src={homeLogo} alt="homeLogo" id="homeLogo" />
                     </Link>
-                    <img style={style} src={messagesLogo} alt="messagesLogo" id="messagesLogo" />
                     <Link to={"/upload"} state={{ displayName: currentUser }} >
                         <img style={style} src={newPostLogo} alt="newPostLogo" id="newPostLogo" />
                     </Link>
