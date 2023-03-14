@@ -15,11 +15,9 @@ body {
   justify-content: center;
   align-items: center;
   height: 100%;
+  width: 100%;
+  position: fixed;
   background-color: #171717;
-}
-
-#root {
-  height: 100%;
 }
 
 .menu {
@@ -59,7 +57,8 @@ li {
 header {
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 9999;
+  border-top: 1px solid grey;
 }
 #signUpPage
 #myProfileWrapper {
@@ -98,19 +97,11 @@ header {
 }
 
 .profileCard {
-  display: flex;
+  display: grid;
+  grid-template-columns: .1fr 1fr 1fr;
+  justify-content: center;
   align-items: center;
-  width: 70%;
-  border: 2px solid red;
-}
-#sideSearchBar {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  border: 2px solid grey;
-  width: 15%;
-  background-color: #e2e8f0;
-  
+  margin-left: 1em;
 }
 .card {
   width: fit-content;
@@ -120,11 +111,11 @@ header {
   margin-top: 1em;
   width: 80%;
 }
-#mainContainer {
+/* #mainContainer {
   display: flex;
   background-color: #171717;
   height: fit-content;
-}
+} */
 
 #dropdownContainer {
   position: absolute;
@@ -176,11 +167,14 @@ header {
   justify-content: center;
   align-items: center;
   background-color: #171717;
+  height: 100%;
   gap: 0.7em;
 }
 #signUpContainer {
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
   gap: 0.7em;
 }
 
@@ -256,17 +250,12 @@ header {
   position: relative;
   z-index: 100;
 }
-#loginPageContainer {
-  border: 2px solid red;
-  height: 100%;
-}
 
 .overlay {
   background-color: rgba(0,0,0,0.5);
   position: fixed;
   width: 100%;
   height: 100%;
-  border: 2px solid red;
 }
 .modalContainer {
   max-width: 400px;
@@ -310,4 +299,76 @@ textarea {
 .btnContainer {
   display: flex;
   justify-content: space-evenly;
+}
+/* #mainContainer {
+  display: flex;
+  height: 100%;
+} */
+/* #sideSearchBar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid grey;
+  width: 15%;
+  background-color: #e2e8f0; 
+} */
+#sideSearchBar {
+  background-color: #e2e8f0; 
+  border-top: 1px solid grey;
+  top: 4.75em;
+  z-index: 2;
+  height: 100%;
+}
+#cardsContainer {
+  background-color: #171717;
+  border: 2px solid blue;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  z-index: 1;
+}
+#searchBar {
+  margin-left: 1.2em;
+}
+#mainContainer {
+  display: grid;
+  border: 2px solid red;
+  height: 100%;
+  width: 100%;
+}
+#main {
+  position: fixed;
+  height: 100%;
+  width: 100%;
+}
+.functionalities {
+  display: flex;
+  align-items: center;
+  gap: 8px
+}
+.addComment {
+  display: none;
+}
+.postComments > p {
+  border: 2px solid red;
+  max-width: 300px;
+  text-overflow: ellipsis;
+}
+
+.card {
+  padding: 1.5em;
+  margin-top: 1em;
+}
+#wrapper {
+  border: 2px solid red;
+  display: flex;
+}
+#root {
+  min-height: 100%;
+}
+#sideBarContainer {
+  z-index: 2;
 }
