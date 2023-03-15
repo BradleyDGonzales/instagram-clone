@@ -10,6 +10,7 @@ import '../App.css'
 import { addDoc, arrayRemove, arrayUnion, collection, collectionGroup, doc, getDoc, getDocs, query, serverTimestamp, setDoc, updateDoc, where } from "firebase/firestore";
 import likeIcon from '../images/like.png'
 import sendCommentIcon from '../images/send.svg'
+import UserLikesModal from "./UserLikesModal";
 const Main = () => {
     let currentArray = [];
     const pfpStyle = {
@@ -20,8 +21,9 @@ const Main = () => {
     const [searchedUsers, setSearchedUsers] = useState([]);
     const [userPosts, setUserPosts] = useState([]);
     const [comment, setComment] = useState("");
-    const [postsCommentsID, setPostsCommentsID] = useState([])
-
+    const [postsCommentsID, setPostsCommentsID] = useState([]);
+    const [openLikesModal, setOpenLikesModal] = useState(false);
+    const [likedByUsers, setLikedByUsers] = useState([]);
     let posts = [];
     let comments = []
     useEffect(() => {
@@ -40,6 +42,7 @@ const Main = () => {
                     console.log(comments)
                     setUserPosts(posts);
                     await loadComments(comments)
+                    console.log(userPosts)
                 })
 
             }
@@ -111,7 +114,6 @@ const Main = () => {
                 }, { merge: true })
                 console.log(parseInt(document.querySelector(`[data-imageurl="${imageURL}Likes"]`).textContent.substring(0, 1)))
                 document.querySelector(`[data-imageurl="${imageURL}Likes"]`).textContent = parseInt(document.querySelector(`[data-imageurl="${imageURL}Likes"]`).textContent.substring(0, 1)) === 0 ? parseInt(document.querySelector(`[data-imageurl="${imageURL}Likes"]`).textContent) + 1 + " like" : parseInt(document.querySelector(`[data-imageurl="${imageURL}Likes"]`).textContent) + 1 + " likes"
-
             }
             else {
                 await setDoc(docRef, {
@@ -119,12 +121,9 @@ const Main = () => {
                     liked_by_users: arrayRemove(auth.currentUser.displayName)
                 }, { merge: true })
                 console.log(parseInt(document.querySelector(`[data-imageurl="${imageURL}Likes"]`).textContent.substring(0, 1)))
-                document.querySelector(`[data-imageurl="${imageURL}Likes"]`).textContent = parseInt(document.querySelector(`[data-imageurl="${imageURL}Likes"]`).textContent.substring(0, 1)) === 1 ? parseInt(document.querySelector(`[data-imageurl="${imageURL}Likes"]`).textContent) - 1 + " likes" : parseInt(document.querySelector(`[data-imageurl="${imageURL}Likes"]`).textContent) - 1 + " like"
+                document.querySelector(`[data-imageurl="${imageURL}Likes"]`).textContent = parseInt(document.querySelector(`[data-imageurl="${imageURL}Likes"]`).textContent.substring(0, 1)) === 2 ? parseInt(document.querySelector(`[data-imageurl="${imageURL}Likes"]`).textContent) - 1 + " like" : parseInt(document.querySelector(`[data-imageurl="${imageURL}Likes"]`).textContent) - 1 + " likes"
             }
-
-
         })
-
     }
     const handleCommentClick = async (postID) => {
         console.log(postID)
@@ -167,8 +166,13 @@ const Main = () => {
             }, { merge: true })
         })
     }
-    const getUserInfo = (username) => {
-        console.log(username)
+    const grabLikedByUsers = async (postID) => {
+        setOpenLikesModal(true);
+        const q = query(collectionGroup(db, "posts"), where("postID", "==", postID));
+        const querySnapshot = await getDocs(q)
+        querySnapshot.forEach((doc) => {
+            setLikedByUsers(doc.data().liked_by_users)
+        })
     }
     return (
         <>
@@ -177,36 +181,39 @@ const Main = () => {
                     is this being rendered
                 </div> :
                 <>
-
                     <Header displayName={auth.currentUser.displayName} />
                     <div id="wrapper">
                         <div id="sideBarContainer">
                             <div id="sideSearchBar">
-                                <input onChange={(e) => setSearchText(e.target.value)} id="searchBar" type="text" />
+                                <input placeholder="Search by username.." onChange={(e) => setSearchText(e.target.value)} id="searchBar" type="text" />
                                 <img onClick={() => handleSearch()} alt="searchIcon" style={pfpStyle} src={searchIcon} />
                                 {searchedUsers.length === 0 ? null : searchedUsers.map((currentUser) => {
                                     return (
                                         <div className="profileCard">
                                             <img className="profilePicture" style={pfpStyle} alt="profilePicture" src={profileIcon} />
                                             <span className="profileUsername" >
-                                                @<Link to="/userprofile" state={{ userOfInterest: currentUser, displayName: auth.currentUser.displayName }}>{currentUser}</Link>
+                                                <Link to="/userprofile" state={{ userOfInterest: currentUser, displayName: auth.currentUser.displayName }}>@{currentUser}</Link>
                                             </span>
                                         </div>)
                                 })}
-
                             </div>
                         </div>
                         <div id="cardsContainer">
                             {userPosts.map((post) => {
                                 return (
                                     <div className="card text-white bg-dark mb-3">
-                                        <p>@<Link to="/userprofile" state={{ userOfInterest: post.user }}>{post.user}</Link></p>
+                                        <div className="user">
+                                            <img src={post?.photoURL} alt="avatar" className="postsAvatar" /><span><Link to="/userprofile" state={{ userOfInterest: post.user }}>@{post.user}</Link></span>
+                                        </div>
                                         <img width={"300px"} src={post.imageURL} alt="userPost" />
                                         <div className="functionalities">
                                             <img className="likeIcon" data-postid={post.postID} data-imageurl={post.imageURL} width={"30px"} src={likeIcon} alt="likeIcon" onClick={(e) => handlePostLike(e.target.getAttribute("data-imageurl"))} />
                                             <img className="commentsLogo" data-postid={post.postID} data-imageurl={post.imageURL} width={"30px"} src={commentsIcon} alt="commentIcon" onClick={(e) => handleCommentClick(e.target.getAttribute("data-postid"))} />
                                         </div>
-                                        <p className="postLikes" data-postid={post.postID} data-imageurl={`${post.imageURL}Likes`}>{post.likes === 1 ? `${post.likes} like` : `${post.likes} likes`}</p>
+                                        <p onClick={() => grabLikedByUsers(post.postID)} className="postLikes" data-postid={post.postID} data-imageurl={`${post.imageURL}Likes`}>
+                                            {post.likes === 1 ? `${post.likes} like` : `${post.likes} likes`}
+                                        </p>
+                                        <UserLikesModal likedByUsers={likedByUsers} onClose={() => setOpenLikesModal(false)} open={openLikesModal} />
                                         <p>{<strong><Link to="/userprofile" state={{ userOfInterest: post.user }}>{post.user}</Link></strong>} {post.caption}</p>
                                         <div className="postComments" data-postid={post.postID}>
                                             {postsCommentsID.length === 0 ? null : postsCommentsID.map((doc) => {
@@ -219,15 +226,10 @@ const Main = () => {
                                         </div>
                                     </div>)
                             })}
-
-
                         </div>
-
                     </div>
                 </>}
-
         </>
     );
 }
-
 export default Main;

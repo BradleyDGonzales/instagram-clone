@@ -1,14 +1,6 @@
-import { Form, useLocation } from "react-router-dom";
-
 const Modal = ({ open, currentUser, onClose, onApplyChanges }) => {
     if (!open) return null;
     console.log(currentUser);
-    // const applyEdits = (values) => {
-    //     for (let i = 0; i < values.length; i++) {
-    //         console.log(values[i].value);
-    //     }
-        
-    // }
     return <div className="overlay">
         <div className="modalContainer">
             <div className="modalRight">

@@ -25,10 +25,8 @@ const Profile = () => {
                     })
                     setCurrentUser(user);
                 })
-
             }
         })
-
     }, [])
     const applyEdits = async (values) => {
         console.log(values)
@@ -56,7 +54,6 @@ const Profile = () => {
                 })
 
                 //changes the username to the new username in following
-
                 const following = query(collectionGroup(db, "users"), where('following', 'array-contains', prevUsername));
                 const followingData = await getDocs(following);
                 let currentUserData = [];
@@ -97,7 +94,7 @@ const Profile = () => {
                 }))
                 currentUserData.map(async (user) => {
                     await updateDoc(doc(db, "users", user.email, "posts", user.postID), {
-                        user: value.value
+                        user: value.value   
                     })
                 })
 
@@ -117,8 +114,6 @@ const Profile = () => {
                         liked_by_users: arrayUnion(value.value),
                     })
                 })
-
-
             }
             else if (value.name === 'name') {
                 await updateDoc(doc(db, "users", auth.currentUser.email), {
@@ -143,7 +138,7 @@ const Profile = () => {
             <div id="mainContainer" >
                 <div id="myProfileWrapper">
                     <div className="test" id="myProfileHeader">
-                        <h4>@{currentUser[0].username}</h4>
+                        <img className="avatar"  src={currentUser[0].photoURL} alt="avatar"/><h4>@{currentUser[0].username}</h4>
                         {/* <Link to={"/edit_profile"} state={{currentUser: currentUser}}> */}
                         <Button onClick={() => setOpenModal(true)} className='modalBtn btn btn-secondary'>Edit Profile</Button>
                         <Modal onApplyChanges={applyEdits} onCancel={() => setOpenModal(false)} onClose={() => setOpenModal(false)} currentUser={currentUser} open={openModal} />

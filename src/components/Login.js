@@ -61,41 +61,5 @@ const Login = () => {
                 </div>
             </div>
         </div>)
-    //     <div id='signUpContainer'>
-    //     <div id='signUpBox'>
-    //         <img width={200} height={75} src={logo} alt="font_logo" />
-    //         <h2 id='signUpBoxText'>Sign up to see photos and videos from friends, family, and other people across the world! </h2>
-    //         <div className='input-group' id="accountDetails">
-    //             <Form id="myForm">
-    //                 <Form.Group className='mb-3'>
-    //                     <Form.Control onChange={(e) => setRegisterEmail(e.target.value)} size='sm' type='email' placeholder='Email' />
-    //                 </Form.Group>
-    //                 <Form.Group className='mb-3'>
-    //                     <Form.Control onChange={(e) => setFullName(e.target.value)} size='sm' type='text' placeholder='Full name' />
-    //                 </Form.Group>
-    //                 <Form.Group className='mb-3'>
-    //                     <Form.Control onChange={(e) => setUserName(e.target.value)} size='sm' type='text' placeholder='Username' />
-    //                 </Form.Group>
-    //                 <Form.Group className='mb-3'>
-    //                     <Form.Control onChange={(e) => setRegisterPassword(e.target.value)} size='sm' type='password' placeholder='Password' />
-    //                 </Form.Group>
-    //                 <Link onClick={(e) => register(e)} to={'/main'} >
-    //                     <Button className='btn btn-secondary'>Sign Up</Button>
-    //                 </Link>
-
-
-    //             </Form>
-
-    //         </div>
-    //     </div>
-    //     <div id="loginRoute">
-    //         <span>Have an account?
-    //             <Link to={"/login"} >
-    //                 &nbsp;Log in
-    //             </Link>
-    //         </span>
-    //     </div>
-
-    // </div>
 }
 export default Login;

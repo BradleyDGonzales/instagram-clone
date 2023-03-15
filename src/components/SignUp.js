@@ -16,9 +16,6 @@ import { v4 } from 'uuid'
 
 const carouselImages = [image1, image2]
 const SignUp = () => {
-
-
-
     const [currentIndex, setCurrentIndex] = useState(0);
     useEffect(() => {
         const intervalID = setInterval(() => {
@@ -32,11 +29,9 @@ const SignUp = () => {
         return () => clearInterval(intervalID);
     }, [currentIndex])
 
-
     const [registerEmail, setRegisterEmail] = useState("")
 
     const [registerPassword, setRegisterPassword] = useState("")
-
 
     const [userName, setUserName] = useState("");
 
@@ -47,20 +42,18 @@ const SignUp = () => {
         try {
             const user = await createUserWithEmailAndPassword(auth, registerEmail, registerPassword).then(async (res) => {
                 console.log(res)
-                await updateProfile(auth.currentUser, {displayName: userName})
+                await updateProfile(auth.currentUser, { displayName: userName, photoURL: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460__340.png" })
             })
-            await setDoc(doc(db, "users", registerEmail), { email: registerEmail, password: registerPassword, username: userName, user_uid: auth.currentUser.uid, followers: [], following: [], postsCount: 0, fullName: fullName})
+            await setDoc(doc(db, "users", registerEmail), { photoURL: auth.currentUser.photoURL, email: registerEmail, password: registerPassword, username: userName, user_uid: auth.currentUser.uid, followers: [], following: [], postsCount: 0, fullName: fullName })
         } catch (error) {
             console.log(error.message);
         }
-
     }
     return (
         <div id='signUpPage'>
             <div className="carousel">
                 <img height={450} width={450} id='emptyScreen' src={empty_screen} alt="empty_screen" />
                 <img height={430} width={300} id="carouselImage" src={carouselImages[currentIndex]} alt="carousel_image" />
-
             </div>
             <div id='signUpContainer'>
                 <div id='signUpBox'>
@@ -83,10 +76,7 @@ const SignUp = () => {
                             <Link onClick={(e) => register(e)} to={'/main'} >
                                 <Button className='btn btn-secondary'>Sign Up</Button>
                             </Link>
-
-
                         </Form>
-
                     </div>
                 </div>
                 <div id="loginRoute">
@@ -96,19 +86,7 @@ const SignUp = () => {
                         </Link>
                     </span>
                 </div>
-
             </div>
-            {/* <div>
-                <h3>Login</h3>
-                <input placeholder='Email' onChange={(event) => { setLoginEmail(event.target.value) }} />
-                <input placeholder='Password' onChange={(event) => { setLoginPassword(event.target.value) }} />
-                <button onClick={login}>Login</button>
-            </div>
-            <div id='loginInfo'>
-                <h4>User Logged In: {user?.email}</h4>
-                <button onClick={logout}>Sign Out</button>
-            </div> */}
-
         </div >
     );
 }

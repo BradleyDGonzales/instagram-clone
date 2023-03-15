@@ -1,11 +1,10 @@
-import { useLocation, useResolvedPath } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import Header from "./Header";
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { auth, db, storage } from "../firebase-config";
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 import { v4 } from 'uuid'
-import { addDoc, collection, doc, getDocs, serverTimestamp, setDoc } from "firebase/firestore";
-import { onAuthStateChanged } from "firebase/auth";
+import { addDoc, collection, doc, getDoc, getDocs, serverTimestamp, setDoc } from "firebase/firestore";
 const Upload = () => {
     const location = useLocation();
     const { displayName } = location.state;
@@ -19,6 +18,7 @@ const Upload = () => {
             caption: caption,
             user: auth.currentUser.displayName,
             email: auth.currentUser.email,
+            photoURL: auth.currentUser.photoURL,
             likes: 0,
             liked_by_users: [],
             comments: [],
@@ -31,6 +31,12 @@ const Upload = () => {
             }, { merge: true})
 
         })
+        const userRef = doc(db, "users", auth.currentUser.email);
+        const userRefData = await getDoc(userRef)
+        console.log(userRefData.data().postsCount)
+        await setDoc(userRef, {
+            postsCount: userRefData.data().postsCount + 1,
+        }, {merge: true})
 
     }
     const uploadImage = async () => {
@@ -40,7 +46,6 @@ const Upload = () => {
         uploadBytes(imageRef, imageUpload).then(async (snapshot) => {
             await getDownloadURL(snapshot.ref).then((url) => uploadImageToDatabase(url))
         })
-
     };
     return (
         <>

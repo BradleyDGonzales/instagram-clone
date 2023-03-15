@@ -26,7 +26,7 @@ const UserProfile = () => {
             setCurrentUser(user);
         })
     }, [])
-
+    
     const handleFollowButton = async () => {
         const userDocRef = doc(db, "users", currentUser[0].email);
         const docRef = doc(db, "users", auth.currentUser.email);
@@ -71,7 +71,7 @@ const UserProfile = () => {
             <div id="mainContainer" >
                 <div id="myProfileWrapper">
                     <div className="test" id="myProfileHeader">
-                        <h4>@{currentUser[0].username}</h4>
+                        <img className="avatar" src={currentUser[0].photoURL} alt="avatar"/><h4>@{currentUser[0].username}</h4>
                         <Button id="followButton" onClick={() => handleFollowButton()} className='btn btn-secondary'></Button>
                     </div>
                     <div className="test" id="myProfileStats">
@@ -84,10 +84,8 @@ const UserProfile = () => {
                         <li>Bio</li>
                         <li>My Website</li>
                     </div>
-
                 </div>
             </div>
-
         </>
     )
 }

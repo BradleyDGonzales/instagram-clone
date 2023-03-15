@@ -1,4 +1,4 @@
-import { Link, useLocation } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import logo from '../images/instagram_logo.png'
 import homeLogo from '../images/home.svg'
 import newPostLogo from '../images/newPost.svg'
@@ -7,7 +7,7 @@ import logoutLogo from '../images/logout.svg'
 import { auth, db } from '../firebase-config.js'
 import { onAuthStateChanged, signOut } from 'firebase/auth'
 import { useEffect, useState } from 'react'
-import { collection, doc, getDoc, getDocs } from 'firebase/firestore'
+import { doc, getDoc} from 'firebase/firestore'
 const Header = () => {
     const [currentUser, setCurrentUser] = useState();
     const [loading, setLoading] = useState(true)
@@ -24,7 +24,7 @@ const Header = () => {
                         console.log('waiting for docSnap data..')
                     }
                 }
-                catch(error) {
+                catch (error) {
                     console.log(error)
                 }
             }
@@ -44,12 +44,8 @@ const Header = () => {
     const logout = async (e) => {
         await signOut(auth)
     }
-
-
     return (
         <>
-
-
             <header>
                 <img id='instagramLogoText' height={75} width={75} src={logo} alt="logo" />
                 <div id="iconsContainer">
@@ -64,10 +60,8 @@ const Header = () => {
                         <div id='dropdownContainer'>
                             <div id="profileItem">
                                 <img alt="profileLogo" style={menuStyle} src={profileLogo} />
-                                <Link to={"/profile"} state={{ displayName: currentUser }}> 
-                                {/* should probably not send anything in link but instead we can set the displayName to currentUser since we get the username from
-                                db and not from auth.currentUser.displayName */}
-                                    @{currentUser} 
+                                <Link to={"/profile"} state={{ displayName: currentUser }}>
+                                    @{currentUser}
                                 </Link>
                             </div>
                             <div id="signOutItem">
@@ -80,7 +74,6 @@ const Header = () => {
                     </div>
                 </div>
             </header>
-
         </>
     )
 }
