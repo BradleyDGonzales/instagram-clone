@@ -58,7 +58,7 @@ header {
   position: sticky;
   top: 0;
   z-index: 9999;
-  border-top: 1px solid grey;
+  border-bottom: 1px solid grey;
 }
 #signUpPage
 #myProfileWrapper {
@@ -66,6 +66,9 @@ header {
   grid-template-rows: .1fr .1fr .1fr;
   justify-content: center;
   color: white;
+}
+#myProfileWrapper {
+  background-color: #171717;
 }
 
 #myProfileHeader h4 {
@@ -75,7 +78,6 @@ header {
   align-items: flex-end;
 }
 #myProfileHeader {
-  justify-content: center;
   grid-column: 1 / span 4;
   align-items: center;
   gap: 2em;
@@ -321,8 +323,6 @@ textarea {
 }
 #cardsContainer {
   background-color: #171717;
-  border: 2px solid blue;
-  height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -335,7 +335,6 @@ textarea {
 }
 #mainContainer {
   display: grid;
-  border: 2px solid red;
   height: 100%;
   width: 100%;
 }
@@ -353,7 +352,6 @@ textarea {
   display: none;
 }
 .postComments > p {
-  border: 2px solid red;
   max-width: 300px;
   text-overflow: ellipsis;
 }
@@ -363,12 +361,46 @@ textarea {
   margin-top: 1em;
 }
 #wrapper {
-  border: 2px solid red;
   display: flex;
-}
-#root {
-  min-height: 100%;
+  min-height: 100vh;
 }
 #sideBarContainer {
   z-index: 2;
+}
+
+#root {
+  min-height: 100vh;
+  width: 100%;
+  border: 2px solid red;
+}
+
+.postLikes {
+  cursor: pointer;
+  width: fit-content;
+}
+.postLikes:hover {
+  text-decoration: underline;
+}
+.avatar {
+  vertical-align: middle;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: none;
+  border-width: 5px;
+  border-style: offset;
+}
+.user {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 0.5em;
+}
+.postsAvatar {
+  height: 40px;
+  width: 40px;
+  border-radius: 50%;
+  border: none;
+  border-width: 5px;
+  border-style: offset;
 }
