@@ -1,3 +1,5 @@
+
+
 import { useEffect, useState } from 'react';
 import { createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, signOut, updatePassword, updateProfile } from 'firebase/auth'
 import { auth } from '../firebase-config.js'
@@ -8,7 +10,7 @@ import logo from '../images/instagram_font_logo.png'
 import image1 from '../images/carousel_img1.jpg'
 import image2 from '../images/carousel_img2.jpg'
 import empty_screen from '../images/empty_screen.png'
-import { Link } from 'react-router-dom';
+import { Link, redirect } from 'react-router-dom';
 import { collection, getDocs, addDoc, setDoc, doc } from 'firebase/firestore'
 import { db } from '../firebase-config'
 import { v4 } from 'uuid'
@@ -29,6 +31,14 @@ const SignUp = () => {
         return () => clearInterval(intervalID);
     }, [currentIndex])
 
+    useEffect(() => {
+        onAuthStateChanged(auth, async (currentUser) => {
+            if (currentUser) {
+                // window.location = "main"
+            }
+        })
+    })
+
     const [registerEmail, setRegisterEmail] = useState("")
 
     const [registerPassword, setRegisterPassword] = useState("")
@@ -40,11 +50,12 @@ const SignUp = () => {
 
     const register = async (e) => {
         try {
-            const user = await createUserWithEmailAndPassword(auth, registerEmail, registerPassword).then(async (res) => {
-                console.log(res)
+            await createUserWithEmailAndPassword(auth, registerEmail, registerPassword).then(async (res) => {
                 await updateProfile(auth.currentUser, { displayName: userName, photoURL: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460__340.png" })
             })
-            await setDoc(doc(db, "users", registerEmail), { photoURL: auth.currentUser.photoURL, email: registerEmail, password: registerPassword, username: userName, user_uid: auth.currentUser.uid, followers: [], following: [], postsCount: 0, fullName: fullName })
+            await setDoc(doc(db, "users", registerEmail), { photoURL: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460__340.png", email: registerEmail, password: registerPassword, username: userName, followers: [], following: [], postsCount: 0, fullName: fullName }).then(function(user) {
+                window.location = "/main"
+            })
         } catch (error) {
             console.log(error.message);
         }
@@ -73,9 +84,9 @@ const SignUp = () => {
                             <Form.Group className='mb-3'>
                                 <Form.Control onChange={(e) => setRegisterPassword(e.target.value)} size='sm' type='password' placeholder='Password' />
                             </Form.Group>
-                            <Link onClick={(e) => register(e)} to={'/main'} >
-                                <Button className='btn btn-secondary'>Sign Up</Button>
-                            </Link>
+                            {/* <Link onClick={(e) => register(e)} to={'/main'} > */}
+                                <Button onClick={(e) => register(e)} className='btn btn-secondary'>Sign Up</Button>
+                            {/* </Link> */}
                         </Form>
                     </div>
                 </div>

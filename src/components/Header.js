@@ -7,7 +7,8 @@ import logoutLogo from '../images/logout.svg'
 import { auth, db } from '../firebase-config.js'
 import { onAuthStateChanged, signOut } from 'firebase/auth'
 import { useEffect, useState } from 'react'
-import { doc, getDoc} from 'firebase/firestore'
+import { doc, getDoc } from 'firebase/firestore'
+import { Button } from 'react-bootstrap'
 const Header = () => {
     const [currentUser, setCurrentUser] = useState();
     const [loading, setLoading] = useState(true)
@@ -41,8 +42,8 @@ const Header = () => {
         console.log(dropdownContainer.style.getPropertyPriority('display'));
         dropdownContainer.style.display === "" ? dropdownContainer.style.display = "block" : dropdownContainer.style.display = "";
     }
-    const logout = async (e) => {
-        await signOut(auth)
+    const logout = async () => {
+        await signOut(auth).then(window.location = "login")
     }
     return (
         <>
@@ -66,9 +67,7 @@ const Header = () => {
                             </div>
                             <div id="signOutItem">
                                 <img alt="logoutLogo" style={menuStyle} src={logoutLogo} />
-                                <Link to={"/login"} onClick={logout}>
-                                    Log Out
-                                </Link>
+                                <Button onClick={() => logout(auth)} >Log Out</Button>
                             </div>
                         </div>
                     </div>

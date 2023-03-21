@@ -1,4 +1,4 @@
-const Modal = ({ open, currentUser, onClose, onApplyChanges }) => {
+const Modal = ({ open, currentUser, onCancel, onClose, onApplyChanges,  onDeleteAccountClick}) => {
     if (!open) return null;
     console.log(currentUser);
     return <div className="overlay">
@@ -24,12 +24,13 @@ const Modal = ({ open, currentUser, onClose, onApplyChanges }) => {
                     <input className="editInput" name="website" type="text" defaultValue={currentUser[0]?.website} />
                 </div>
                 <div className="btnContainer">
-                    <button onClick={() => onApplyChanges(document.querySelectorAll('.editInput'))} className="btnPrimary">
+                    <button id="applyEditsBtn" onClick={() => onApplyChanges(document.querySelectorAll('.editInput'))} className="btnPrimary btn btn-success">
                         Apply Changes
                     </button>
-                    <button className="btnSecondary">
+                    <button onClick={() => onCancel()} className="btnSecondary btn btn-secondary">
                         Cancel
                     </button>
+                    <button onClick={() => onDeleteAccountClick()} id="deleteAccountBtn" className="btn btn-danger">Delete Account</button>
                 </div>
             </div>
         </div>

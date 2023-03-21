@@ -9,14 +9,16 @@ const Login = () => {
     const [loginPassword, setLoginPassword] = useState("")
     const [user, setUser] = useState({})
     useEffect(() => {
-        onAuthStateChanged(auth, (currentUser) => {
-            setUser(currentUser);
+        onAuthStateChanged(auth, async (currentUser) => {
+            if (currentUser) {
+                setUser(currentUser);
+                window.location = "main"
+            }
         })
     })
     const login = async (e) => {
         try {
             const user = await signInWithEmailAndPassword(auth, loginEmail, loginPassword);
-            console.log(await user)
 
         } catch (error) {
             e.preventDefault();
@@ -25,8 +27,8 @@ const Login = () => {
 
     }
 
-    const logout = async (e) => {
-        await signOut(auth)
+    const logout = (e) => {
+        signOut(auth);
     }
 
     return (
@@ -57,7 +59,7 @@ const Login = () => {
                 </div>
                 <div>
                     <h4>User Logged In: {user?.email}</h4>
-                    <button onClick={logout}>Sign Out</button>
+                    <button onClick={() => logout()}>Sign Out</button>
                 </div>
             </div>
         </div>)

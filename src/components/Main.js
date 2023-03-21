@@ -30,27 +30,29 @@ const Main = () => {
         onAuthStateChanged(auth, async (currentUser) => {
             if (currentUser) {
                 setLoading(false);
+                console.log(auth.currentUser.displayName)
                 let followedUsers = await getFollowedUsers(currentUser.email)
-                followedUsers[0].map(async (user) => {
-                    const usersRef = query(collectionGroup(db, "posts"), where('user', '==', user));
-                    const querySnapshot = await getDocs(usersRef);
-                    querySnapshot.forEach((doc) => {
-                        posts.push(doc.data());
-                        comments.push(doc.id)
+                if (followedUsers.length > 0) {
+                    followedUsers[0].map(async (user) => {
+                        const usersRef = query(collectionGroup(db, "posts"), where('user', '==', user));
+                        const querySnapshot = await getDocs(usersRef);
+                        querySnapshot.forEach((doc) => {
+                            posts.push(doc.data());
+                            comments.push(doc.id)
+                        })
+                        console.log(posts);
+                        console.log(comments)
+                        setUserPosts(posts);
+                        await loadComments(comments)
+                        console.log(userPosts)
                     })
-                    console.log(posts);
-                    console.log(comments)
-                    setUserPosts(posts);
-                    await loadComments(comments)
-                    console.log(userPosts)
-                })
-
+                }
             }
             else {
                 setLoading(true);
             }
         })
-    }, [])
+    })
     const loadComments = async (comments) => {
         let testSnapshot = [];
         comments.map(async (comment) => {
@@ -174,6 +176,17 @@ const Main = () => {
             setLikedByUsers(doc.data().liked_by_users)
         })
     }
+    const handleRedirect = (userOfInterest, displayName) => {
+        console.log(userOfInterest)
+        console.log(displayName)
+        if (userOfInterest === displayName) {
+            return (<Link to={"/profile"} state={{ displayName: userOfInterest }}>@{userOfInterest}</Link>)
+        }
+        else {
+            return (<Link to={"/userprofile"} state={{ userOfInterest: userOfInterest, displayName: userOfInterest }}>@{userOfInterest}</Link>)
+        }
+
+    }
     return (
         <>
             {loading ?
@@ -192,7 +205,7 @@ const Main = () => {
                                         <div className="profileCard">
                                             <img className="profilePicture" style={pfpStyle} alt="profilePicture" src={profileIcon} />
                                             <span className="profileUsername" >
-                                                <Link to="/userprofile" state={{ userOfInterest: currentUser, displayName: auth.currentUser.displayName }}>@{currentUser}</Link>
+                                                {handleRedirect(currentUser, auth.currentUser.displayName)}
                                             </span>
                                         </div>)
                                 })}

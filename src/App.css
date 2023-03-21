@@ -48,25 +48,29 @@ body {
   border-right: 15px solid transparent;
   border-bottom: 15px solid #9ca3af;
 }
+
 li {
   list-style-type: none;
 }
+
 .uploadContainer {
   background: #262626;
 }
+
 header {
   position: sticky;
   top: 0;
   z-index: 9999;
   border-bottom: 1px solid grey;
 }
-#signUpPage
-#myProfileWrapper {
+
+#signUpPage #myProfileWrapper {
   display: grid;
   grid-template-rows: .1fr .1fr .1fr;
   justify-content: center;
   color: white;
 }
+
 #myProfileWrapper {
   background-color: #171717;
 }
@@ -77,6 +81,7 @@ header {
   justify-content: flex-end;
   align-items: flex-end;
 }
+
 #myProfileHeader {
   grid-column: 1 / span 4;
   align-items: center;
@@ -94,6 +99,7 @@ header {
   grid-column: 1 / span 4;
   color: white;
 }
+
 #myProfilePersonalInfo {
   grid-row-start: 3;
 }
@@ -105,14 +111,17 @@ header {
   align-items: center;
   margin-left: 1em;
 }
+
 .card {
   width: fit-content;
 }
+
 #searchBar {
-  background: rgb(215,215,215);
+  background: rgb(215, 215, 215);
   margin-top: 1em;
   width: 80%;
 }
+
 /* #mainContainer {
   display: flex;
   background-color: #171717;
@@ -132,6 +141,7 @@ header {
 ul {
   list-style: none;
 }
+
 .test {
   color: white;
 }
@@ -172,6 +182,7 @@ header {
   height: 100%;
   gap: 0.7em;
 }
+
 #signUpContainer {
   display: flex;
   flex-direction: column;
@@ -189,15 +200,18 @@ header {
   align-items: center;
 
 }
+
 #signUpRoute {
   border: 1px solid grey;
   background-color: #262626;
   color: white;
-  padding: 1em; 
+  padding: 1em;
 }
+
 #loginButton {
   width: 100%;
 }
+
 #loginRoute,
 #signUpBox {
   display: flex;
@@ -254,54 +268,68 @@ header {
 }
 
 .overlay {
-  background-color: rgba(0,0,0,0.5);
+  background-color: rgba(0, 0, 0, 0.5);
   position: fixed;
   width: 100%;
   height: 100%;
 }
+
 .modalContainer {
   max-width: 400px;
   width: 100%;
   position: fixed;
   top: 40%;
   left: 50%;
-  transform: translate(-50%,-50%);
+  transform: translate(-50%, -50%);
   display: flex;
   justify-content: center;
   align-items: center;
   background-color: #262626;
   border-radius: 1em;
   padding: 2em;
-  box-shadow: 0px 0px 18px 0px rgba(0,0,0,0.75);
+  box-shadow: 0px 0px 18px 0px rgba(0, 0, 0, 0.75);
 }
-input[type="text"], textarea {
+
+input[type="text"],
+textarea {
   background-color: #9ca3af;
 }
+
 textarea {
   height: 300px;
 }
+
 .editInput {
   resize: none;
 }
+
 .modalContent {
   display: grid;
   grid-template-columns: .1fr;
   gap: 8px;
 }
+
 .closeBtn {
   position: fixed;
   top: 8px;
   right: 8px;
 }
+
 .bio {
   display: flex;
   flex-direction: column;
   resize: none;
 }
+
 .btnContainer {
-  display: flex;
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
   justify-content: space-evenly;
+  row-gap: 12px;
+  column-gap: 16px;
 }
+
 /* #mainContainer {
   display: flex;
   height: 100%;
@@ -315,12 +343,13 @@ textarea {
   background-color: #e2e8f0; 
 } */
 #sideSearchBar {
-  background-color: #e2e8f0; 
+  background-color: #e2e8f0;
   border-top: 1px solid grey;
   top: 4.75em;
   z-index: 2;
   height: 100%;
 }
+
 #cardsContainer {
   background-color: #171717;
   display: flex;
@@ -330,28 +359,34 @@ textarea {
   width: 100%;
   z-index: 1;
 }
+
 #searchBar {
   margin-left: 1.2em;
 }
+
 #mainContainer {
   display: grid;
   height: 100%;
   width: 100%;
 }
+
 #main {
   position: fixed;
   height: 100%;
   width: 100%;
 }
+
 .functionalities {
   display: flex;
   align-items: center;
   gap: 8px
 }
+
 .addComment {
   display: none;
 }
-.postComments > p {
+
+.postComments>p {
   max-width: 300px;
   text-overflow: ellipsis;
 }
@@ -360,10 +395,12 @@ textarea {
   padding: 1.5em;
   margin-top: 1em;
 }
+
 #wrapper {
   display: flex;
   min-height: 100vh;
 }
+
 #sideBarContainer {
   z-index: 2;
 }
@@ -378,9 +415,11 @@ textarea {
   cursor: pointer;
   width: fit-content;
 }
+
 .postLikes:hover {
   text-decoration: underline;
 }
+
 .avatar {
   vertical-align: middle;
   width: 60px;
@@ -390,12 +429,14 @@ textarea {
   border-width: 5px;
   border-style: offset;
 }
+
 .user {
   display: flex;
   align-items: center;
   gap: 8px;
   margin-bottom: 0.5em;
 }
+
 .postsAvatar {
   height: 40px;
   width: 40px;
@@ -403,4 +444,25 @@ textarea {
   border: none;
   border-width: 5px;
   border-style: offset;
+}
+#deleteAccountBtn {
+  grid-column: 1 / span 2;
+}
+#applyEditsBtn {
+  font-size: 16px;
+  white-space: nowrap;
+}
+.deleteAccountBtnContainer {
+  display: flex;
+  gap: 32px;
+}
+.textContent {
+  white-space: nowrap;
+}
+.confirmationModalContent {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
 }
