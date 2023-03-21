@@ -8,6 +8,7 @@ const Login = () => {
     const [loginEmail, setLoginEmail] = useState("")
     const [loginPassword, setLoginPassword] = useState("")
     const [user, setUser] = useState({})
+
     useEffect(() => {
         onAuthStateChanged(auth, async (currentUser) => {
             if (currentUser) {
@@ -18,7 +19,9 @@ const Login = () => {
     })
     const login = async (e) => {
         try {
-            const user = await signInWithEmailAndPassword(auth, loginEmail, loginPassword);
+            return await signInWithEmailAndPassword(auth, loginEmail, loginPassword).then((firebaseUser) => {
+                window.location = "main"
+            })
 
         } catch (error) {
             e.preventDefault();
@@ -46,9 +49,9 @@ const Login = () => {
                         </Form.Group>
 
                     </Form>
-                    <Link to={"/main"} >
-                        <button className='btn btn-secondary' id='loginButton' onClick={login}>Login</button>
-                    </Link>
+                    {/* <Link to={"/main"} > */}
+                        <button className='btn btn-secondary' id='loginButton' onClick={() => login()}>Login</button>
+                    {/* </Link> */}
                 </div>
                 <div id="signUpRoute">
                     <span>Don't have an account?

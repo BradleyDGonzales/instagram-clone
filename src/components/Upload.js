@@ -1,15 +1,26 @@
 import { useLocation } from "react-router-dom";
 import Header from "./Header";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { auth, db, storage } from "../firebase-config";
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 import { v4 } from 'uuid'
 import { addDoc, collection, doc, getDoc, getDocs, serverTimestamp, setDoc } from "firebase/firestore";
+import { onAuthStateChanged } from "firebase/auth";
 const Upload = () => {
-    const location = useLocation();
-    const { displayName } = location.state;
     const [imageUpload, setImageUpload] = useState(null);
     const [caption, setCaption] = useState('');
+    let displayName;
+    useEffect(() => {
+        onAuthStateChanged(auth, async (currentUser) => {
+            if (!currentUser) {
+                window.location = "login"
+            }
+            else {
+                displayName = auth.currentUser.displayName;
+            }
+        })
+    })
+    // const location = useLocation();
     const uploadImageToDatabase = async (url) => {
         const docRef = doc(db, "users", auth.currentUser.email);
         const colRef = collection(docRef, "posts")
@@ -28,7 +39,7 @@ const Upload = () => {
         postID.forEach(async (post) => {
             await setDoc(doc(db, "users", auth.currentUser.email, "posts", post.id), {
                 postID: post.id,
-            }, { merge: true})
+            }, { merge: true })
 
         })
         const userRef = doc(db, "users", auth.currentUser.email);
@@ -36,7 +47,7 @@ const Upload = () => {
         console.log(userRefData.data().postsCount)
         await setDoc(userRef, {
             postsCount: userRefData.data().postsCount + 1,
-        }, {merge: true})
+        }, { merge: true })
 
     }
     const uploadImage = async () => {

@@ -34,10 +34,10 @@ const SignUp = () => {
     useEffect(() => {
         onAuthStateChanged(auth, async (currentUser) => {
             if (currentUser) {
-                // window.location = "main"
+                window.location = "main"
             }
         })
-    })
+    }, [])
 
     const [registerEmail, setRegisterEmail] = useState("")
 

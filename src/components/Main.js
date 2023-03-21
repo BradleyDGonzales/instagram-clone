@@ -50,9 +50,10 @@ const Main = () => {
             }
             else {
                 setLoading(true);
+                window.location = "login"
             }
         })
-    })
+    },[])
     const loadComments = async (comments) => {
         let testSnapshot = [];
         comments.map(async (comment) => {
@@ -183,7 +184,7 @@ const Main = () => {
             return (<Link to={"/profile"} state={{ displayName: userOfInterest }}>@{userOfInterest}</Link>)
         }
         else {
-            return (<Link to={"/userprofile"} state={{ userOfInterest: userOfInterest, displayName: userOfInterest }}>@{userOfInterest}</Link>)
+            return (<Link to={"/userprofile"} acquiredUser={userOfInterest} state={{ userOfInterest: userOfInterest, displayName: userOfInterest }}>@{userOfInterest}</Link>)
         }
 
     }

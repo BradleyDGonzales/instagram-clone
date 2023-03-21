@@ -1,13 +1,16 @@
 import { onAuthStateChanged } from "firebase/auth";
-import { addDoc, arrayRemove, arrayUnion, collection, doc, getDoc, onSnapshot, query, Query, setDoc, updateDoc, where } from "firebase/firestore";
+import { arrayRemove, arrayUnion, collection, doc, getDoc, onSnapshot, query, updateDoc, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
-import { Link, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { auth, db } from "../firebase-config";
 import Header from "./Header";
 
 const UserProfile = () => {
     const location = useLocation();
+    if (location.state === null) {
+        window.location = "login"
+    }
     let user = []
     const { userOfInterest } = location.state;
     const { displayName } = location.state;
@@ -20,7 +23,6 @@ const UserProfile = () => {
         onSnapshot(q, (snapshot) => {
             user = [];
             snapshot.docs.map((doc) => {
-                console.log(doc.data())
                 user.push({ ...doc.data() })
             })
             setCurrentUser(user);
