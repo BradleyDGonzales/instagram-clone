@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { onAuthStateChanged, updateProfile } from "firebase/auth";
 import { arrayRemove, arrayUnion, collection, collectionGroup, doc, getDoc, getDocs, onSnapshot, query, updateDoc, where } from "firebase/firestore";
 import Modal from "./Modal";
+import ConfirmationModal from "./ConfirmationModal";
 
 const Profile = () => {
     const location = useLocation();
@@ -13,6 +14,7 @@ const Profile = () => {
     let user = [];
     const [currentUser, setCurrentUser] = useState('')
     const [openModal, setOpenModal] = useState(false);
+    const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
     useEffect(() => {
         onAuthStateChanged(auth, async (currentUser) => {
             if (currentUser) {
@@ -34,7 +36,7 @@ const Profile = () => {
             if (value.name === 'username' && value.value !== '') {
                 const prevUsername = auth.currentUser.displayName
 
-                await updateProfile(auth.currentUser, {displayName: value.value})
+                await updateProfile(auth.currentUser, { displayName: value.value })
                 await updateDoc(doc(db, "users", auth.currentUser.email), {
                     username: value.value
                 })
@@ -94,7 +96,7 @@ const Profile = () => {
                 }))
                 currentUserData.map(async (user) => {
                     await updateDoc(doc(db, "users", user.email, "posts", user.postID), {
-                        user: value.value   
+                        user: value.value
                     })
                 })
 
@@ -132,17 +134,20 @@ const Profile = () => {
             }
         })
     }
+    const deleteAccount = () => {
+        auth.currentUser.delete();
+        window.location = "login"
+    }
     return (currentUser === '' ? <div>loading...</div> :
         <>
             <Header displayName={displayName} />
             <div id="mainContainer" >
                 <div id="myProfileWrapper">
                     <div className="test" id="myProfileHeader">
-                        <img className="avatar"  src={currentUser[0].photoURL} alt="avatar"/><h4>@{currentUser[0].username}</h4>
-                        {/* <Link to={"/edit_profile"} state={{currentUser: currentUser}}> */}
+                        <img className="avatar" src={currentUser[0].photoURL} alt="avatar" /><h4>@{currentUser[0].username}</h4>
                         <Button onClick={() => setOpenModal(true)} className='modalBtn btn btn-secondary'>Edit Profile</Button>
-                        <Modal onApplyChanges={applyEdits} onCancel={() => setOpenModal(false)} onClose={() => setOpenModal(false)} currentUser={currentUser} open={openModal} />
-                        {/* </Link> */}
+                        <Modal onDeleteAccountClick={() => setOpenConfirmationModal(true)} onApplyChanges={applyEdits} onCancel={() => setOpenModal(false)} onClose={() => setOpenModal(false)} currentUser={currentUser} open={openModal} />
+                        <ConfirmationModal deleteAccount={deleteAccount} open={openConfirmationModal} onCancel={() => setOpenConfirmationModal(false)} />
                     </div>
                     <div className="test" id="myProfileStats">
                         <li>{currentUser[0].postsCount} posts</li>
