@@ -12,9 +12,11 @@ const Profile = () => {
     const location = useLocation();
     const { displayName } = location.state
     let user = [];
+    let posts = [];
     const [currentUser, setCurrentUser] = useState('')
     const [openModal, setOpenModal] = useState(false);
     const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
+    const [userPosts, setUserPosts] = useState([]);
     useEffect(() => {
         onAuthStateChanged(auth, async (currentUser) => {
             if (currentUser) {
@@ -27,6 +29,21 @@ const Profile = () => {
                     })
                     setCurrentUser(user);
                 })
+            }
+        })
+    }, [])
+
+    useEffect(() => {
+        onAuthStateChanged(auth, async (currentUser) => {
+            if (currentUser) {
+                const usersRef = collection(db, "users", currentUser.email, "posts")
+                const usersRefData = await getDocs(usersRef)
+                usersRefData.forEach((doc) => {
+                    posts.push(doc.data())
+                })
+                console.log(posts);
+                setUserPosts(posts);
+
             }
         })
     }, [])
@@ -142,24 +159,34 @@ const Profile = () => {
         <>
             <Header displayName={displayName} />
             <div id="mainContainer" >
-                <div id="myProfileWrapper">
-                    <div className="test" id="myProfileHeader">
-                        <img className="avatar" src={currentUser[0].photoURL} alt="avatar" /><h4>@{currentUser[0].username}</h4>
-                        <Button onClick={() => setOpenModal(true)} className='modalBtn btn btn-secondary'>Edit Profile</Button>
-                        <Modal onDeleteAccountClick={() => setOpenConfirmationModal(true)} onApplyChanges={applyEdits} onCancel={() => setOpenModal(false)} onClose={() => setOpenModal(false)} currentUser={currentUser} open={openModal} />
-                        <ConfirmationModal deleteAccount={deleteAccount} open={openConfirmationModal} onCancel={() => setOpenConfirmationModal(false)} />
+                <div id="myProfile">
+                    <div id="myProfileWrapper">
+                        <img className="avatar" id="profileAvatar" src={currentUser[0].photoURL} alt="avatar" />
+                        <div className="test" id="profileHeader">
+                            <h4>@{currentUser[0].username}</h4>
+                            <Button onClick={() => setOpenModal(true)} className='modalBtn btn btn-secondary'>Edit Profile</Button>
+                            <Modal onDeleteAccountClick={() => setOpenConfirmationModal(true)} onApplyChanges={applyEdits} onCancel={() => setOpenModal(false)} onClose={() => setOpenModal(false)} currentUser={currentUser} open={openModal} />
+                            <ConfirmationModal deleteAccount={deleteAccount} open={openConfirmationModal} onCancel={() => setOpenConfirmationModal(false)} />
+                        </div>
+                        <div className="test" id="myProfileStats">
+                            <li><strong>{currentUser[0].postsCount}</strong> posts</li>
+                            <li><strong>{currentUser[0].followers.length}</strong> followers</li>
+                            <li><strong>{currentUser[0].following.length}</strong> following</li>
+                        </div>
+                        <div className="test" id="myProfilePersonalInfo" >
+                            <li>{currentUser[0].fullName ? currentUser[0].fullName : `@${currentUser[0].username}`}</li>
+                            <li>{currentUser[0].bio}</li>
+                            <li>{currentUser[0].website}</li>
+                        </div>
                     </div>
-                    <div className="test" id="myProfileStats">
-                        <li>{currentUser[0].postsCount} posts</li>
-                        <li>{currentUser[0].followers.length} followers</li>
-                        <li>{currentUser[0].following.length} following</li>
+                    <div id="myProfilePostsWrapper">
+                        <span>posts</span>
+                        <div id="myProfilePosts">
+                            {userPosts.length > 0 ? userPosts.map((post) => {
+                                return (<img src={post.imageURL} alt="post" width="300" height="300"></img>)
+                            }) : null}
+                        </div>
                     </div>
-                    <div className="test" id="myProfilePersonalInfo" >
-                        <li>{currentUser[0].fullName ? currentUser[0].fullName : `@${currentUser[0].username}`}</li>
-                        <li>{currentUser[0].bio}</li>
-                        <li>{currentUser[0].website}</li>
-                    </div>
-
                 </div>
             </div>
         </>)

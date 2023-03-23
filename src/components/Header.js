@@ -67,7 +67,7 @@ const Header = () => {
                             </div>
                             <div id="signOutItem">
                                 <img alt="logoutLogo" style={menuStyle} src={logoutLogo} />
-                                <Button onClick={() => logout(auth)} >Log Out</Button>
+                                <button id="logoutBtn" onClick={() => logout(auth)} >Log Out</button>
                             </div>
                         </div>
                     </div>

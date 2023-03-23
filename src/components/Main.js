@@ -217,9 +217,9 @@ const Main = () => {
                                 return (
                                     <div className="card text-white bg-dark mb-3">
                                         <div className="user">
-                                            <img src={post?.photoURL} alt="avatar" className="postsAvatar" /><span><Link to="/userprofile" state={{ userOfInterest: post.user }}>@{post.user}</Link></span>
+                                            <img src={post?.photoURL} alt="avatar" className="postsAvatar"/><span><Link to="/userprofile" state={{ userOfInterest: post.user }}>@{post.user}</Link></span>
                                         </div>
-                                        <img width={"300px"} src={post.imageURL} alt="userPost" />
+                                        <img width="300px" height="400px" src={post.imageURL} alt="userPost" />
                                         <div className="functionalities">
                                             <img className="likeIcon" data-postid={post.postID} data-imageurl={post.imageURL} width={"30px"} src={likeIcon} alt="likeIcon" onClick={(e) => handlePostLike(e.target.getAttribute("data-imageurl"))} />
                                             <img className="commentsLogo" data-postid={post.postID} data-imageurl={post.imageURL} width={"30px"} src={commentsIcon} alt="commentIcon" onClick={(e) => handleCommentClick(e.target.getAttribute("data-postid"))} />
