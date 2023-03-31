@@ -1,6 +1,6 @@
 const ConfirmationModal = ({ open, onCancel, deleteAccount}) => {
     if (!open) return null;
-    return <div className="overlay">
+    return (
     <div className="modalContainer">
         <div className="confirmationModalContent">
             <div className="textContent">
@@ -15,7 +15,6 @@ const ConfirmationModal = ({ open, onCancel, deleteAccount}) => {
                 </button>
             </div>
         </div>
-    </div>
-</div>
+    </div>)
 }
 export default ConfirmationModal;

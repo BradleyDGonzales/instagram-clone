@@ -1,4 +1,4 @@
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged, updateProfile } from "firebase/auth";
 import { useEffect, useState } from "react";
 import commentsIcon from '../images/messages.svg'
 import { Link } from "react-router-dom";
@@ -16,7 +16,7 @@ const Main = () => {
     const pfpStyle = {
         height: "25px",
     }
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [searchText, setSearchText] = useState("");
     const [searchedUsers, setSearchedUsers] = useState([]);
     const [userPosts, setUserPosts] = useState([]);
@@ -54,6 +54,13 @@ const Main = () => {
             }
         })
     },[])
+    useEffect(() => {
+        onAuthStateChanged(auth, async (currentUser) => {
+            if (currentUser) {
+                setLoading(false)
+            }
+        })
+    })
     const loadComments = async (comments) => {
         let testSnapshot = [];
         comments.map(async (comment) => {
@@ -195,7 +202,7 @@ const Main = () => {
                     is this being rendered
                 </div> :
                 <>
-                    <Header displayName={auth.currentUser.displayName} />
+                    <Header displayName={auth.currentUser?.displayName} />
                     <div id="wrapper">
                         <div id="sideBarContainer">
                             <div id="sideSearchBar">

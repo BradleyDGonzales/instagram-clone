@@ -1,55 +1,79 @@
 import { Link, useLocation } from "react-router-dom";
 import Header from "./Header";
-import { auth, db } from '../firebase-config.js'
+import { auth, db, storage } from '../firebase-config.js'
 import { Button } from "react-bootstrap";
 import { useEffect, useState } from "react";
 import { onAuthStateChanged, updateProfile } from "firebase/auth";
-import { arrayRemove, arrayUnion, collection, collectionGroup, doc, getDoc, getDocs, onSnapshot, query, updateDoc, where } from "firebase/firestore";
+import { addDoc, arrayRemove, arrayUnion, collection, collectionGroup, doc, getDoc, getDocs, onSnapshot, query, updateDoc, where } from "firebase/firestore";
 import Modal from "./Modal";
 import ConfirmationModal from "./ConfirmationModal";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { v4 } from 'uuid'
 
 const Profile = () => {
     const location = useLocation();
-    const { displayName } = location.state
     let user = [];
     let posts = [];
     const [currentUser, setCurrentUser] = useState('')
     const [openModal, setOpenModal] = useState(false);
     const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
     const [userPosts, setUserPosts] = useState([]);
+    const [imageUpload, setImageUpload] = useState(null);
+    let displayName = '';
+    console.log(location.state)
     useEffect(() => {
         onAuthStateChanged(auth, async (currentUser) => {
-            if (currentUser) {
+            if (currentUser !== null) {
                 const usersRef = collection(db, "users")
                 const q = query(usersRef, where("email", "==", currentUser.email));
-                onSnapshot(q, (snapshot) => {
+                onSnapshot(q, async (snapshot) => {
                     user = [];
                     snapshot.docs.map((doc) => {
                         user.push({ ...doc.data() })
                     })
                     setCurrentUser(user);
+                    
+                    // displayName = location.state.displayName;
+                    const usersRef = collection(db, "users", currentUser.email, "posts")
+                    const currentUsersRefData = await getDocs(usersRef)
+                    currentUsersRefData.forEach((doc) => {
+                        posts.push(doc.data())
+                    })
+                    console.log(posts);
+                    console.log(user)
+    
+                    setUserPosts(posts);
                 })
+            }
+            else {
+                window.location = "login"
             }
         })
     }, [])
 
-    useEffect(() => {
-        onAuthStateChanged(auth, async (currentUser) => {
-            if (currentUser) {
-                const usersRef = collection(db, "users", currentUser.email, "posts")
-                const usersRefData = await getDocs(usersRef)
-                usersRefData.forEach((doc) => {
-                    posts.push(doc.data())
-                })
-                console.log(posts);
-                setUserPosts(posts);
+    // useEffect(() => {
+    //     onAuthStateChanged(auth, async (user) => {
+    //         if (user) {
+    //             displayName = location.state.displayName;
+    //             const usersRef = collection(db, "users", user.email, "posts")
+    //             const usersRefData = await getDocs(usersRef)
+    //             usersRefData.forEach((doc) => {
+    //                 posts.push(doc.data())
+    //             })
+    //             console.log(posts);
+    //             console.log(user)
 
-            }
-        })
-    }, [])
-    const applyEdits = async (values) => {
+    //             setUserPosts(posts);
+    //         }
+    //         else {
+    //             window.location = "login"
+    //         }
+    //     })
+    // }, [])
+    const applyEdits = async (values, imageUpload) => {
         console.log(values)
         values.forEach(async (value) => {
+            console.log(value.name)
             if (value.name === 'username' && value.value !== '') {
                 const prevUsername = auth.currentUser.displayName
 
@@ -149,15 +173,36 @@ const Profile = () => {
                     website: value.value
                 })
             }
+            else if (value.name === 'pfp' && imageUpload !== null) {
+                const imageRef = ref(storage, `userImages/${imageUpload.name + v4()}`);
+                console.log(imageUpload)
+                uploadBytes(imageRef, imageUpload).then(async (snapshot) => {
+                    await getDownloadURL(snapshot.ref).then(async (url) => {
+                        const docRef = doc(db, "users", auth.currentUser.email);
+                        await updateProfile(auth.currentUser, {photoURL: url})
+                        await updateDoc(docRef, {
+                            photoURL: url,
+                        })
+                    })
+                })
+            }
         })
     }
     const deleteAccount = () => {
         auth.currentUser.delete();
         window.location = "login"
     }
-    return (currentUser === '' ? <div>loading...</div> :
+    // const uploadImage = async () => {
+    //     if (imageUpload === null) return;
+    //     const imageRef = ref(storage, `userImages/${imageUpload.name + v4()}`);
+    //     console.log(imageUpload)
+    //     uploadBytes(imageRef, imageUpload).then(async (snapshot) => {
+    //         await getDownloadURL(snapshot.ref).then((url) => uploadImageToDatabase(url))
+    //     })
+    // };
+    return (currentUser === '' ? <div>loading..</div> :
         <>
-            <Header displayName={displayName} />
+            <Header />
             <div id="mainContainer" >
                 <div id="myProfile">
                     <div id="myProfileWrapper">

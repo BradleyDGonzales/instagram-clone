@@ -18,6 +18,7 @@ const Header = () => {
                 try {
                     const docRef = doc(db, "users", user.email);
                     const docSnap = await getDoc(docRef);
+                    console.log(docSnap.data())
                     try {
                         setCurrentUser(docSnap.data().username)
                     }

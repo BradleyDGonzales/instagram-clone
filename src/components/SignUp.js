@@ -50,12 +50,15 @@ const SignUp = () => {
 
     const register = async (e) => {
         try {
-            await createUserWithEmailAndPassword(auth, registerEmail, registerPassword).then(async (res) => {
-                await updateProfile(auth.currentUser, { displayName: userName, photoURL: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460__340.png" })
-            })
-            await setDoc(doc(db, "users", registerEmail), { photoURL: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460__340.png", email: registerEmail, password: registerPassword, username: userName, followers: [], following: [], postsCount: 0, fullName: fullName }).then(function(user) {
-                window.location = "/main"
-            })
+            await createUserWithEmailAndPassword(auth, registerEmail, registerPassword)
+            .then(await setDoc(doc(db, "users", registerEmail), { photoURL: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460__340.png", email: registerEmail, password: registerPassword, username: userName, followers: [], following: [], postsCount: 0, fullName: fullName }))
+            .then(await updateProfile(auth.currentUser, { displayName: userName, photoURL: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460__340.png"} ))
+            .then(await signInWithEmailAndPassword(auth, registerEmail, registerPassword))
+            //     await updateProfile(auth.currentUser, { displayName: userName, photoURL: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460__340.png" })
+            //         // .then(async () => {
+            //         //     window.location = "main"
+            //         // })
+            // })
         } catch (error) {
             console.log(error.message);
         }
@@ -85,7 +88,7 @@ const SignUp = () => {
                                 <Form.Control onChange={(e) => setRegisterPassword(e.target.value)} size='sm' type='password' placeholder='Password' />
                             </Form.Group>
                             {/* <Link onClick={(e) => register(e)} to={'/main'} > */}
-                                <Button onClick={(e) => register(e)} className='btn btn-secondary'>Sign Up</Button>
+                            <Button onClick={(e) => register(e)} className='btn btn-secondary'>Sign Up</Button>
                             {/* </Link> */}
                         </Form>
                     </div>

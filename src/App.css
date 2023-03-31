@@ -64,12 +64,12 @@ header {
   border-bottom: 1px solid grey;
 }
 
-#signUpPage {
+/* #signUpPage {
   display: grid;
   grid-template-rows: .1fr .1fr .1fr;
   justify-content: center;
   color: white;
-}
+} */
 
 
 .profileCard {
@@ -329,6 +329,7 @@ textarea {
 
 .editInput {
   resize: none;
+
 }
 
 .modalContent {
@@ -458,6 +459,9 @@ textarea {
   margin-bottom: 0.5em;
 }
 
+#pfpUpload {
+  /* width: fit-content; */
+}
 .postsAvatar {
   height: 40px;
   width: 40px;
